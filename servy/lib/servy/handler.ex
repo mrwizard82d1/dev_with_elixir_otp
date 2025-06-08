@@ -28,7 +28,7 @@ defmodule Servy.Handler do
     # - Reason phrase
     #
     # The `Content-Type` line specifies the expected format
-    3
+
     # The `Content-Length` line specifies the number of characters in the body.
 
     # TODO: Use values in the map to create an HTTP response string:
@@ -51,23 +51,6 @@ Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept */*
 
-"""
-
-# Another HERE doc describing the expected response.
-# We expect three header lines, a blank line, and a response line.
-# The first header line is the status line consisting of
-#
-# - HTTP version
-# - Status code
-# - Reason phrase
-# The `Content-Type` line specifies the expected format
-# The `Content-Length` line specifies the number of characters in the body.
-expected_response = """
-HTTP/1.1 200 OK
-Content-Type: text/html
-Content-Length: 20
-
-Bears, Lions, Tigers
 """
 
 response = Servy.Handler.handle(request)
