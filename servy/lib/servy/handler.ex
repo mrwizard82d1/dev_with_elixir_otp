@@ -1,4 +1,44 @@
 defmodule Servy.Handler do
+  def handle(request) do
+    conv = parse(request)
+    conv = route(conv)
+    format_response(conv)
+  end
+
+  def parse(request) do
+    # TODO: Parse the request string into a map:
+    conv = %{method: "GET", path: "/wildthings", resp_body: ""}
+  end
+
+  def route(conv) do
+    # TODO: Create a new map that also has the response body:
+    conv = %{method: "GET", path: "/wildthings", resp_body: "Bears, Lions, Tigers"}
+  end
+
+  def format_response(conv) do
+    # A HERE doc describing the expected response.
+    #
+    # We expect three header lines, a blank line, and a response line.
+    #
+    # The first header line is the status line consisting of
+    #
+    # - HTTP version
+    # - Status code
+    # - Reason phrase
+    #
+    # The `Content-Type` line specifies the expected format
+    3
+    # The `Content-Length` line specifies the number of characters in the body.
+
+    # TODO: Use values in the map to create an HTTP response string:
+    """
+    HTTP/1.1 200 OK
+    Content-Type: text/html
+    Content-Length: 20
+
+    Bears, Lions, Tigers
+    """
+  end
 end
 
 # Utilizes an Elixir "HERE Doc"
@@ -28,3 +68,7 @@ Content-Length: 20
 
 Bears, Lions, Tigers
 """
+
+response = Servy.Handler.handle(request)
+
+IO.puts(response)
