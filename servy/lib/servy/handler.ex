@@ -5,17 +5,17 @@ defmodule Servy.Handler do
     format_response(conv)
   end
 
-  def parse(request) do
+  def parse(_request) do
     # TODO: Parse the request string into a map:
-    conv = %{method: "GET", path: "/wildthings", resp_body: ""}
+    _conv = %{method: "GET", path: "/wildthings", resp_body: ""}
   end
 
-  def route(conv) do
+  def route(_conv) do
     # TODO: Create a new map that also has the response body:
-    conv = %{method: "GET", path: "/wildthings", resp_body: "Bears, Lions, Tigers"}
+    _conv = %{method: "GET", path: "/wildthings", resp_body: "Bears, Lions, Tigers"}
   end
 
-  def format_response(conv) do
+  def format_response(_conv) do
     # A HERE doc describing the expected response.
     #
     # We expect three header lines, a blank line, and a response line.
