@@ -16,12 +16,11 @@ defmodule Servy.Handler do
     %{method: method, path: path, resp_body: ""}
   end
 
-  def route(_conv) do
-    # TODO: Create a new map that also has the response body:
-    _conv = %{method: "GET", path: "/wildthings", resp_body: "Bears, Lions, Tigers"}
+  def route(conv) do
+    %{conv | resp_body: "Bears, Lions, Tigers"}
   end
 
-  def format_response(_conv) do
+  def format_response(conv) do
     # A HERE doc describing the expected response.
     #
     # We expect three header lines, a blank line, and a response line.
@@ -37,12 +36,14 @@ defmodule Servy.Handler do
     # The `Content-Length` line specifies the number of characters in the body.
 
     # TODO: Use values in the map to create an HTTP response string:
+    # Since the following expression is a HERE doc, we can use string
+    # interpolation to "splice" in fields.
     """
     HTTP/1.1 200 OK
     Content-Type: text/html
-    Content-Length: 20
+    Content-Length: #{String.length(conv.resp_body)}
 
-    Bears, Lions, Tigers
+    #{conv.resp_body}
     """
   end
 end
