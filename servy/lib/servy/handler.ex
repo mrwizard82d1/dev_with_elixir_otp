@@ -35,9 +35,15 @@ defmodule Servy.Handler do
 
     # The `Content-Length` line specifies the number of characters in the body.
 
-    # TODO: Use values in the map to create an HTTP response string:
     # Since the following expression is a HERE doc, we can use string
     # interpolation to "splice" in fields.
+    #
+    # In this expression, we use the expression `String.length/1`; however,
+    # this expression **does not work on all strings.** For example, if
+    # the response contained a German character, o-umlaut, the result of
+    # `String.length(conv.resp_body)` would be 20; however, the number of
+    # bytes (required by the spec) would actually be **21**. Consequently,
+    # the correct expression would be `#{byte_size(conv.resp_body)}`.
     """
     HTTP/1.1 200 OK
     Content-Type: text/html
