@@ -25,11 +25,6 @@ defmodule Servy.Handler do
     route(conv, conv.method, conv.path)
   end
 
-  # Define a "catch-all" route **in the wrong place**
-  defp route(conv, method, path) do
-    %{conv | resp_body: "No #{path} here}"}
-  end
-
   # The following two "functions" are actually **function clauses**. Each
   # clause of `route/3` handles an HTTP method **and** path. Elixir
   # itself uses **pattern matching** to decide which of these two clauses
@@ -45,6 +40,11 @@ defmodule Servy.Handler do
 
   defp route(conv, "GET", "/bears") do
     %{conv | resp_body: "Teddy, Smokey, Paddington"}
+  end
+
+  # Define a "catch-all" route in the right place.
+  defp route(conv, _method, path) do
+    %{conv | resp_body: "No #{path} here"}
   end
 
   def format_response(conv) do
