@@ -58,6 +58,18 @@ defmodule Servy.Handler do
     }
   end
 
+  # The function definition will attempt to match `id` to a value that,
+  # when concatenated to the path, "/bears/", will math the path of the
+  # HTTP request.
+  defp route(conv, "GET", "/bears/" <> id) do
+    %{
+      conv |
+      resp_body: "Bear #{id}",
+      status_code: 200,
+      reason_phrase: status_code_to_reason_phrase(200)
+    }
+  end
+
   # Define a "catch-all" route in the right place.
   defp route(conv, _method, path) do
     # Because we **did not** find the requested resource, we
@@ -88,16 +100,6 @@ defmodule Servy.Handler do
     # Since the following expression is a HERE doc, we can use string
     # interpolation to "splice" in fields.
     #
-    # In this expression, we use the expression `String.length/1`; however,
-    # this expression **does not work on all strings.** For example, if
-    # the response contained a German character, o-umlaut, the result of
-    # `String.length(conv.resp_body)` would be 20; however, the number of
-    # bytes (required by the spec) would actually be **21**. Consequently,
-    # the correct expression would be `#{byte_size(conv.resp_body)}`.
-    #
-    # We currently have an issue. Even if a problem occurs, for example,
-    # we have no route to handle a request path of "/big_foot", we still
-    # return a status code of 200 to the caller.
     """
     HTTP/1.1 #{conv.status_code} #{conv.reason_phrase}
     Content-Type: text/html
@@ -148,6 +150,19 @@ IO.puts(response)
 
 request = """
 GET /bigfoot HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts(response)
+
+# Request a specific bear by its ID
+request = """
+GET /bears/1 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept */*
