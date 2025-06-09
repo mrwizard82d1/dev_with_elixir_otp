@@ -42,11 +42,6 @@ defmodule Servy.Handler do
     %{conv | resp_body: "Teddy, Smokey, Paddington"}
   end
 
-  # Define a "catch-all" route in the right place.
-  defp route(conv, _method, path) do
-    %{conv | resp_body: "No #{path} here"}
-  end
-
   def format_response(conv) do
     # A HERE doc describing the expected response.
     #
@@ -78,6 +73,14 @@ defmodule Servy.Handler do
 
     #{conv.resp_body}
     """
+  end
+
+  # Define a "catch-all" route in the wrong place again.
+  #
+  # This location **does not** cause a runtime error; however, it does generate
+  # a warning. (I do not know the possible consequences of ignoring this warning .)
+  defp route(conv, _method, path) do
+    %{conv | resp_body: "No #{path} here"}
   end
 end
 
