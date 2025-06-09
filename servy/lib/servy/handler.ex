@@ -7,10 +7,9 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  def log(conv) do
-    IO.inspect conv
-    conv
-  end
+  # Because `IO.inspect/1` returns its argument, we can simplify this code
+  # to a "one-liner."
+  def log(conv), do: IO.inspect conv
 
   def parse(request) do
     [method, path, _] =
