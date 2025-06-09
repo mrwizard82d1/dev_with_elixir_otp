@@ -22,13 +22,19 @@ defmodule Servy.Handler do
   end
 
   def route(conv) do
-    # This implementation works but it **is not** typical Elixir code
-    resp_body = if conv.path == "/wildthings" do
-      "Bears, Lions, Tigers"
-    else
-      "Teddy, Smokey, Paddington"
-    end
-    %{conv | resp_body: resp_body}
+    route(conv, conv.path)
+  end
+
+  # The following two "functions" are actually **function clauses**. Each
+  # clause of `route/2` handles a single (hard-coded) HTTP path. Elixir
+  # itself uses **pattern matching** to decide which of these two clauses
+  # it will execute at run-time.
+  defp route(conv, "/wildthings") do
+    %{conv | resp_body: "Bears, Lions, Tigers"}
+  end
+
+  defp route(conv, "/bears") do
+    %{conv | resp_body: "Teddy, Smokey, Paddington"}
   end
 
   def format_response(conv) do
