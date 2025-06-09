@@ -22,7 +22,13 @@ defmodule Servy.Handler do
   end
 
   def route(conv) do
-    %{conv | resp_body: "Bears, Lions, Tigers"}
+    # This implementation works but it **is not** typical Elixir code
+    resp_body = if conv.path == "/wildthings" do
+      "Bears, Lions, Tigers"
+    else
+      "Teddy, Smokey, Paddington"
+    end
+    %{conv | resp_body: resp_body}
   end
 
   def format_response(conv) do
@@ -64,6 +70,18 @@ end
 # but we still need the empty line.
 request = """
 GET /wildthings HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts(response)
+
+request = """
+GET /bears HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept */*
