@@ -18,7 +18,13 @@ defmodule Servy.Handler do
       |> List.first
       |> String.split(" ")
 
-    %{method: method, path: path, resp_body: "", status_code: 500}
+    %{
+      method: method,
+      path: path,
+      resp_body: "",
+      status_code: 500,
+      reason_phrase: status_code_to_reason_phrase(500)
+    }
   end
 
   def route(conv) do
@@ -35,18 +41,33 @@ defmodule Servy.Handler do
   # add a parameter for the request method (although currently,
   # effectively unused.)
   defp route(conv, "GET", "/wildthings") do
-    %{conv | resp_body: "Bears, Lions, Tigers", status_code: 200}
+    %{
+      conv |
+      resp_body: "Bears, Lions, Tigers",
+      status_code: 200,
+      reason_phrase: status_code_to_reason_phrase(200)
+    }
   end
 
   defp route(conv, "GET", "/bears") do
-    %{conv | resp_body: "Teddy, Smokey, Paddington", status_code: 200}
+    %{
+      conv |
+      resp_body: "Teddy, Smokey, Paddington",
+      status_code: 200,
+      reason_phrase: status_code_to_reason_phrase(200)
+    }
   end
 
   # Define a "catch-all" route in the right place.
   defp route(conv, _method, path) do
     # Because we **did not** find the requested resource, we
     # return a 404 status code
-    %{conv | resp_body: "No #{path} here", status_code: 404}
+    %{
+      conv |
+      resp_body: "No #{path} here",
+      status_code: 404,
+      reason_phrase: status_code_to_reason_phrase(404)
+    }
   end
 
   def format_response(conv) do
@@ -78,12 +99,23 @@ defmodule Servy.Handler do
     # we have no route to handle a request path of "/big_foot", we still
     # return a status code of 200 to the caller.
     """
-    HTTP/1.1 #{conv.status_code} OK
+    HTTP/1.1 #{conv.status_code} #{conv.reason_phrase}
     Content-Type: text/html
     Content-Length: #{byte_size(conv.resp_body)}
 
     #{conv.resp_body}
     """
+  end
+
+  defp status_code_to_reason_phrase(status_code) do
+    %{
+    200 => "OK",
+    201 => "Created",
+    401 => "Unauthorized",
+    403 => "Forbidden",
+    404 => "Not found",
+    500 => "Internal Server Error",
+    }[status_code]
   end
 end
 
