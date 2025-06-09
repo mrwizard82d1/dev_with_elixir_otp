@@ -22,18 +22,23 @@ defmodule Servy.Handler do
   end
 
   def route(conv) do
-    route(conv, conv.path)
+    route(conv, conv.method, conv.path)
   end
 
   # The following two "functions" are actually **function clauses**. Each
-  # clause of `route/2` handles a single (hard-coded) HTTP path. Elixir
+  # clause of `route/3` handles an HTTP method **and** path. Elixir
   # itself uses **pattern matching** to decide which of these two clauses
   # it will execute at run-time.
-  defp route(conv, "/wildthings") do
+  #
+  # The choice of the route to fulfill the request actually depends on
+  # **two** elements of the request: the path **and the method**. Let's
+  # add a parameter for the request method (although currently,
+  # effectively unused.)
+  defp route(conv, "GET", "/wildthings") do
     %{conv | resp_body: "Bears, Lions, Tigers"}
   end
 
-  defp route(conv, "/bears") do
+  defp route(conv, "GET", "/bears") do
     %{conv | resp_body: "Teddy, Smokey, Paddington"}
   end
 
