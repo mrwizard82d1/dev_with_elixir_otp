@@ -71,6 +71,10 @@ defmodule Servy.Handler do
     # `String.length(conv.resp_body)` would be 20; however, the number of
     # bytes (required by the spec) would actually be **21**. Consequently,
     # the correct expression would be `#{byte_size(conv.resp_body)}`.
+    #
+    # We currently have an issue. Even if a problem occurs, for example,
+    # we have no route to handle a request path of "/big_foot", we still
+    # return a status code of 200 to the caller.
     """
     HTTP/1.1 200 OK
     Content-Type: text/html
