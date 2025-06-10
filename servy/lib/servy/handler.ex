@@ -48,7 +48,6 @@ defmodule Servy.Handler do
       path: path,
       resp_body: "",
       status_code: 500,
-      reason_phrase: status_code_to_reason_phrase(500)
     }
   end
 
@@ -70,7 +69,6 @@ defmodule Servy.Handler do
       conv |
       resp_body: "Bears, Lions, Tigers",
       status_code: 200,
-      reason_phrase: status_code_to_reason_phrase(200)
     }
   end
 
@@ -79,7 +77,6 @@ defmodule Servy.Handler do
       conv |
       resp_body: "Teddy, Smokey, Paddington",
       status_code: 200,
-      reason_phrase: status_code_to_reason_phrase(200)
     }
   end
 
@@ -91,7 +88,6 @@ defmodule Servy.Handler do
       conv |
       resp_body: "Bear #{id}",
       status_code: 200,
-      reason_phrase: status_code_to_reason_phrase(200)
     }
   end
 
@@ -100,7 +96,6 @@ defmodule Servy.Handler do
       conv |
       resp_body: "Deleting a bear is forbidden!",
       status_code: 403,
-      reason_phrase: status_code_to_reason_phrase(403)
     }
   end
 
@@ -112,7 +107,6 @@ defmodule Servy.Handler do
       conv |
       resp_body: "No #{path} here",
       status_code: 404,
-      reason_phrase: status_code_to_reason_phrase(404)
     }
   end
 
@@ -135,7 +129,7 @@ defmodule Servy.Handler do
     # interpolation to "splice" in fields.
     #
     """
-    HTTP/1.1 #{conv.status_code} #{conv.reason_phrase}
+    HTTP/1.1 #{conv.status_code} #{status_code_to_reason_phrase(conv.status_code)}
     Content-Type: text/html
     Content-Length: #{byte_size(conv.resp_body)}
 
