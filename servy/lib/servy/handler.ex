@@ -5,8 +5,17 @@ defmodule Servy.Handler do
     |> rewrite_path
     |> log
     |> route
+    |> track
     |> format_response
   end
+
+  defp track(%{status_code: 404, path: path} = conv) do
+    IO.puts "Warning: #{path} is on the loose!"
+    conv
+  end
+
+  # Default implementation returns `conv` **unchanged**
+  defp track(conv), do: conv
 
   # The pattern, `%{path: "/wildlife"} = conv` accomplishes two
   # distinct goals. First, the expression, `%{path: "/wildlife"}`,
