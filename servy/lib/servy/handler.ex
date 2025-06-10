@@ -29,6 +29,13 @@ defmodule Servy.Handler do
     %{conv | path: "/wildthings"}
   end
 
+  # Rewrite paths like
+  # - "/bears?id=1" to "bears/1"
+  # - "/bears?id=2" to "bears/2"
+  defp rewrite_path(%{path: "/bears?id=" <> id} = conv) do
+    %{conv | path: "/bears/#{id}"}
+  end
+
   # "Do nothing" clause
   defp rewrite_path(conv), do: conv
 
@@ -216,6 +223,19 @@ IO.puts(response)
 
 request = """
 GET /wildlife HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts(response)
+
+# Exercises 08: Rewriting
+request = """
+GET /bears?id=1 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept */*
