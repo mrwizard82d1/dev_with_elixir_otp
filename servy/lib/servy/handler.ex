@@ -21,7 +21,7 @@ defmodule Servy.Handler do
   end
 
   # "Do nothing" clause
-  # defp rewrite_path(conv), do: conv
+  defp rewrite_path(conv), do: conv
 
   # Because `IO.inspect/1` returns its argument, we can simplify this code
   # to a "one-liner."
