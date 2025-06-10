@@ -8,9 +8,20 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  def rewrite_path(conv) do
+  # The pattern, `%{path: "/wildlife"} = conv` accomplishes two
+  # distinct goals. First, the expression, `%{path: "/wildlife"}`,
+  # tries to match the expression with the function arguments.
+  # Second, the `= conv` expression binds the entire map that
+  # matches the pattern, `%{path: "/wildlife"}`.
+  #
+  # If the match occurs, the returned value changes the path,
+  # "/wildlife", to the path, "/wildthings".
+  defp rewrite_path(%{path: "/wildlife"} = conv) do
     %{conv | path: "/wildthings"}
   end
+
+  # "Do nothing" clause
+  # defp rewrite_path(conv), do: conv
 
   # Because `IO.inspect/1` returns its argument, we can simplify this code
   # to a "one-liner."
@@ -190,6 +201,18 @@ IO.puts(response)
 # Delete a specific bear by its ID
 request = """
 DELETE /bears/1 HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts(response)
+
+request = """
+GET /wildlife HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept */*
