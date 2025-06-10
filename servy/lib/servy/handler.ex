@@ -106,6 +106,14 @@ defmodule Servy.Handler do
     }
   end
 
+  def route(%{method: "GET", path: "/about"} = conv) do
+    %{
+      conv |
+      resp_body: "contents of file",
+      status_code: 200,
+    }
+  end
+
   # Define a "catch-all" route in the right place.
   def route(%{method: _method, path: path} = conv) do
     # Because we **did not** find the requested resource, we
@@ -236,6 +244,17 @@ IO.puts(response)
 # Exercises 08: Rewriting
 request = """
 GET /bears?id=1 HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts(response)
+request = """
+GET /about HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept */*
