@@ -52,9 +52,9 @@ defmodule Servy.Handler do
     }
   end
 
-  def route(conv) do
-    route(conv, conv.method, conv.path)
-  end
+#  def route(conv) do
+#    route(conv, conv.method, conv.path)
+#  end
 
   # The following two "functions" are actually **function clauses**. Each
   # clause of `route/3` handles an HTTP method **and** path. Elixir
@@ -65,7 +65,7 @@ defmodule Servy.Handler do
   # **two** elements of the request: the path **and the method**. Let's
   # add a parameter for the request method (although currently,
   # effectively unused.)
-  def route(conv, "GET", "/wildthings") do
+  def route(%{method: "GET", path: "/wildthings"} = conv) do
     %{
       conv |
       resp_body: "Bears, Lions, Tigers",
@@ -74,7 +74,7 @@ defmodule Servy.Handler do
     }
   end
 
-  def route(conv, "GET", "/bears") do
+  def route(%{method: "GET", path: "/bears"} = conv) do
     %{
       conv |
       resp_body: "Teddy, Smokey, Paddington",
@@ -86,7 +86,7 @@ defmodule Servy.Handler do
   # The function definition will attempt to match `id` to a value that,
   # when concatenated to the path, "/bears/", will math the path of the
   # HTTP request.
-  def route(conv, "GET", "/bears/" <> id) do
+  def route(%{method: "GET", path: "/bears/" <> id} = conv) do
     %{
       conv |
       resp_body: "Bear #{id}",
@@ -95,7 +95,7 @@ defmodule Servy.Handler do
     }
   end
 
-  def route(conv, "DELETE", "/bears/" <> _id) do
+  def route(%{method: "DELETE", path: "/bears/" <> _id} = conv) do
     %{
       conv |
       resp_body: "Deleting a bear is forbidden!",
@@ -105,7 +105,7 @@ defmodule Servy.Handler do
   end
 
   # Define a "catch-all" route in the right place.
-  def route(conv, _method, path) do
+  def route(%{method: _method, path: path} = conv) do
     # Because we **did not** find the requested resource, we
     # return a 404 status code
     %{
@@ -183,7 +183,7 @@ response = Servy.Handler.handle(request)
 IO.puts(response)
 
 request = """
-GET /bigfoot HTTP/1.1
+GET /big_foot HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept */*
