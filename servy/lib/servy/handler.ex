@@ -65,7 +65,7 @@ defmodule Servy.Handler do
   # **two** elements of the request: the path **and the method**. Let's
   # add a parameter for the request method (although currently,
   # effectively unused.)
-  defp route(conv, "GET", "/wildthings") do
+  def route(conv, "GET", "/wildthings") do
     %{
       conv |
       resp_body: "Bears, Lions, Tigers",
@@ -74,7 +74,7 @@ defmodule Servy.Handler do
     }
   end
 
-  defp route(conv, "GET", "/bears") do
+  def route(conv, "GET", "/bears") do
     %{
       conv |
       resp_body: "Teddy, Smokey, Paddington",
@@ -86,7 +86,7 @@ defmodule Servy.Handler do
   # The function definition will attempt to match `id` to a value that,
   # when concatenated to the path, "/bears/", will math the path of the
   # HTTP request.
-  defp route(conv, "GET", "/bears/" <> id) do
+  def route(conv, "GET", "/bears/" <> id) do
     %{
       conv |
       resp_body: "Bear #{id}",
@@ -95,7 +95,7 @@ defmodule Servy.Handler do
     }
   end
 
-  defp route(conv, "DELETE", "/bears/" <> _id) do
+  def route(conv, "DELETE", "/bears/" <> _id) do
     %{
       conv |
       resp_body: "Deleting a bear is forbidden!",
@@ -105,7 +105,7 @@ defmodule Servy.Handler do
   end
 
   # Define a "catch-all" route in the right place.
-  defp route(conv, _method, path) do
+  def route(conv, _method, path) do
     # Because we **did not** find the requested resource, we
     # return a 404 status code
     %{
