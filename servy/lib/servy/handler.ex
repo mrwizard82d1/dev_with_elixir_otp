@@ -2,9 +2,14 @@ defmodule Servy.Handler do
   def handle(request) do
     request
     |> parse
+    |> rewrite_path
     |> log
     |> route
     |> format_response
+  end
+
+  def rewrite_path(conv) do
+    %{conv | path: "/wildthings"}
   end
 
   # Because `IO.inspect/1` returns its argument, we can simplify this code
