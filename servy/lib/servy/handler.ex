@@ -52,6 +52,7 @@ defmodule Servy.Handler do
       |> String.split(" ")
 
     %{
+      emoji: "",
       method: method,
       path: path,
       resp_body: "",
@@ -118,15 +119,13 @@ defmodule Servy.Handler do
     }
   end
 
-  defp emojify(%{status_code: 200} = conv) do
-    party_popper_emoji = "\u{01f389}"
-    emojies = String.duplicate(party_popper_emoji, 5)
-    body = emojies <> "\n" <> conv.resp_body <> "\n" <> emojies
-
-    %{conv | resp_body: body}
+  def emojify(conv) do
+    if conv.status_code == 200 do
+      %{conv | emoji: "\u{01f389}"}
+    else
+      %{conv | emoji: ""}
+    end
   end
-
-  defp emojify(conv), do: conv
 
   def format_response(conv) do
     # A HERE doc describing the expected response.
@@ -147,11 +146,13 @@ defmodule Servy.Handler do
     # interpolation to "splice" in fields.
     #
     """
+    #{conv.emoji}
     HTTP/1.1 #{conv.status_code} #{status_code_to_reason_phrase(conv.status_code)}
     Content-Type: text/html
     Content-Length: #{byte_size(conv.resp_body)}
 
     #{conv.resp_body}
+    #{conv.emoji}
     """
   end
 
