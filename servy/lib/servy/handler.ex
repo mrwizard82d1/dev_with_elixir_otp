@@ -107,11 +107,14 @@ defmodule Servy.Handler do
   end
 
   def route(%{method: "GET", path: "/about"} = conv) do
-    %{
-      conv |
-      resp_body: "contents of file",
-      status_code: 200,
-    }
+    case File.read("pages/about.html") do
+      {:ok, content} ->
+        %{conv | status_code: 200, resp_body: content}
+      {:error, :enoent} ->
+        %{conv | status_code: 404, resp_body: "File not found"}
+      {:error, reason} ->
+        %{conv | status_code: 500, resp_body: "File error #{reason}"}
+    end
   end
 
   # Define a "catch-all" route in the right place.
