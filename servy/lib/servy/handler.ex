@@ -107,7 +107,7 @@ defmodule Servy.Handler do
   end
 
   def route(%{method: "GET", path: "/about"} = conv) do
-    case File.read("pages/about.html") do
+    case File.read("pages/about_us.html") do
       {:ok, content} ->
         %{conv | status_code: 200, resp_body: content}
       {:error, :enoent} ->
