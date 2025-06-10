@@ -70,6 +70,15 @@ defmodule Servy.Handler do
     }
   end
 
+  defp route(conv, "DELETE", "/bears/" <> _id) do
+    %{
+      conv |
+      resp_body: "Deleting a bear is forbidden!",
+      status_code: 403,
+      reason_phrase: status_code_to_reason_phrase(403)
+    }
+  end
+
   # Define a "catch-all" route in the right place.
   defp route(conv, _method, path) do
     # Because we **did not** find the requested resource, we
@@ -163,6 +172,19 @@ IO.puts(response)
 # Request a specific bear by its ID
 request = """
 GET /bears/1 HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts(response)
+
+# Delete a specific bear by its ID
+request = """
+DELETE /bears/1 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept */*
