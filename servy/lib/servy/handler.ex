@@ -43,7 +43,9 @@ defmodule Servy.Handler do
 
   @pages_path Path.expand("../../pages", __DIR__)
 
-  import Servy.Plugins
+  # Remember that the number value in the list is the **arity** of
+  # the function.
+  import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
 
   @doc "Transforms a request into the appropriate response"
   def handle(request) do
