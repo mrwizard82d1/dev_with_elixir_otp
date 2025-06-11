@@ -1,4 +1,8 @@
 defmodule Servy.Handler do
+
+  @moduledoc "Handles HTTP requests."
+
+  @doc "Transforms a request into the appropriate response"
   def handle(request) do
     request
     |> parse
@@ -9,13 +13,14 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  defp track(%{status_code: 404, path: path} = conv) do
+  @doc "Logs 404 requests"
+  def track(%{status_code: 404, path: path} = conv) do
     IO.puts "Warning: #{path} is on the loose!"
     conv
   end
 
   # Default implementation returns `conv` **unchanged**
-  defp track(conv), do: conv
+  def track(conv), do: conv
 
   # The pattern, `%{path: "/wildlife"} = conv` accomplishes two
   # distinct goals. First, the expression, `%{path: "/wildlife"}`,
@@ -87,9 +92,11 @@ defmodule Servy.Handler do
     }
   end
 
+  @pages_path Path.expand("../../pages", __DIR__)
+
   def route(%{method: "GET", path: "/bears/new"} = conv) do
     file_path =
-      Path.expand("../../pages", __DIR__)
+      @pages_path
       |> Path.join("form.html")
 
     case File.read(file_path) do
@@ -143,23 +150,10 @@ defmodule Servy.Handler do
   end
 
   def route(%{method: "GET", path: "/about"} = conv) do
-    file_path =
       Path.expand("../../pages", __DIR__)
       |> Path.join("about.html")
       |> File.read
       |> handle_file(conv)
-  end
-
-  defp handle_file({:ok, content}, conv) do
-    %{conv | status_code: 200, resp_body: content}
-  end
-
-  defp handle_file({:error, :enoent}, conv) do
-    %{conv | status_code: 404, resp_body: "File not found!"}
-  end
-
-  defp handle_file({:error, reason}, conv) do
-    %{conv | status_code: 500, resp_body: "File error: #{reason}"}
   end
 
 #  def route(%{method: "GET", path: "/about"} = conv) do
@@ -186,6 +180,18 @@ defmodule Servy.Handler do
       resp_body: "No #{path} here",
       status_code: 404,
     }
+  end
+
+  defp handle_file({:ok, content}, conv) do
+    %{conv | status_code: 200, resp_body: content}
+  end
+
+  defp handle_file({:error, :enoent}, conv) do
+    %{conv | status_code: 404, resp_body: "File not found!"}
+  end
+
+  defp handle_file({:error, reason}, conv) do
+    %{conv | status_code: 500, resp_body: "File error: #{reason}"}
   end
 
   def format_response(conv) do
@@ -329,14 +335,14 @@ response = Servy.Handler.handle(request)
 
 IO.puts(response)
 
-request = """
-GET /bears/new HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept */*
-
-"""
-
-response = Servy.Handler.handle(request)
-
-IO.puts(response)
+#request = """
+#GET /bears/new HTTP/1.1
+#Host: example.com
+#User-Agent: ExampleBrowser/1.0
+#Accept */*
+#
+#"""
+#
+#response = Servy.Handler.handle(request)
+#
+#IO.puts(response)
