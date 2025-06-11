@@ -1,19 +1,4 @@
-defmodule Servy.Handler do
-
-  @moduledoc "Handles HTTP requests."
-
-  @pages_path Path.expand("../../pages", __DIR__)
-
-  @doc "Transforms a request into the appropriate response"
-  def handle(request) do
-    request
-    |> parse
-    |> rewrite_path
-    |> log
-    |> route
-    |> track
-    |> format_response
-  end
+defmodule Servy.Plugins do
 
   @doc "Logs 404 requests"
   def track(%{status_code: 404, path: path} = conv) do
@@ -32,23 +17,42 @@ defmodule Servy.Handler do
   #
   # If the match occurs, the returned value changes the path,
   # "/wildlife", to the path, "/wildthings".
-  defp rewrite_path(%{path: "/wildlife"} = conv) do
+  def rewrite_path(%{path: "/wildlife"} = conv) do
     %{conv | path: "/wildthings"}
   end
 
   # Rewrite paths like
   # - "/bears?id=1" to "bears/1"
   # - "/bears?id=2" to "bears/2"
-  defp rewrite_path(%{path: "/bears?id=" <> id} = conv) do
+  def rewrite_path(%{path: "/bears?id=" <> id} = conv) do
     %{conv | path: "/bears/#{id}"}
   end
 
   # "Do nothing" clause
-  defp rewrite_path(conv), do: conv
+  def rewrite_path(conv), do: conv
 
   # Because `IO.inspect/1` returns its argument, we can simplify this code
   # to a "one-liner."
   def log(conv), do: IO.inspect conv
+
+end
+
+defmodule Servy.Handler do
+
+  @moduledoc "Handles HTTP requests."
+
+  @pages_path Path.expand("../../pages", __DIR__)
+
+  @doc "Transforms a request into the appropriate response"
+  def handle(request) do
+    request
+    |> parse
+    |> Servy.Plugins.rewrite_path
+    |> Servy.Plugins.log
+    |> route
+    |> Servy.Plugins.track
+    |> format_response
+  end
 
   def parse(request) do
     [method, path, _] =
