@@ -110,16 +110,36 @@ defmodule Servy.Handler do
     file_path =
       Path.expand("../../pages", __DIR__)
       |> Path.join("about.html")
-
-    case File.read(file_path) do
-      {:ok, content} ->
-        %{conv | status_code: 200, resp_body: content}
-      {:error, :enoent} ->
-        %{conv | status_code: 404, resp_body: "File not found"}
-      {:error, reason} ->
-        %{conv | status_code: 500, resp_body: "File error #{reason}"}
-    end
+      |> File.read
+      |> handle_file(conv)
   end
+
+  defp handle_file({:ok, content}, conv) do
+    %{conv | status_code: 200, resp_body: content}
+  end
+
+  defp handle_file({:error, :enoent}, conv) do
+    %{conv | status_code: 404, resp_body: "File not found!"}
+  end
+
+  defp handle_file({:error, reason}, conv) do
+    %{conv | status_code: 500, resp_body: "File error: #{reason}"}
+  end
+
+#  def route(%{method: "GET", path: "/about"} = conv) do
+#    file_path =
+#      Path.expand("../../pages", __DIR__)
+#      |> Path.join("about.html")
+#
+#    case File.read(file_path) do
+#      {:ok, content} ->
+#        %{conv | status_code: 200, resp_body: content}
+#      {:error, :enoent} ->
+#        %{conv | status_code: 404, resp_body: "File not found"}
+#      {:error, reason} ->
+#        %{conv | status_code: 500, resp_body: "File error #{reason}"}
+#    end
+#  end
 
   # Define a "catch-all" route in the right place.
   def route(%{method: _method, path: path} = conv) do
