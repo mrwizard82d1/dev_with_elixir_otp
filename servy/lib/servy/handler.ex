@@ -2,6 +2,8 @@ defmodule Servy.Handler do
 
   @moduledoc "Handles HTTP requests."
 
+  @pages_path Path.expand("../../pages", __DIR__)
+
   @doc "Transforms a request into the appropriate response"
   def handle(request) do
     request
@@ -91,8 +93,6 @@ defmodule Servy.Handler do
       status_code: 200,
     }
   end
-
-  @pages_path Path.expand("../../pages", __DIR__)
 
   def route(%{method: "GET", path: "/bears/new"} = conv) do
     file_path =
