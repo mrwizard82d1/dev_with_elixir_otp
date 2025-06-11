@@ -107,8 +107,9 @@ defmodule Servy.Handler do
   end
 
   def route(%{method: "GET", path: "/about"} = conv) do
-    pages_path = Path.expand("../../pages", __DIR__)
-    file_path = Path.join(pages_path, "about.html")
+    file_path =
+      Path.expand("../../pages", __DIR__)
+      |> Path.join("about.html")
 
     case File.read(file_path) do
       {:ok, content} ->
