@@ -87,6 +87,42 @@ defmodule Servy.Handler do
     }
   end
 
+  def route(%{method: "GET", path: "/bears/new"} = conv) do
+    file_path =
+      Path.expand("../../pages", __DIR__)
+      |> Path.join("form.html")
+
+    case File.read(file_path) do
+      {:ok, content} ->
+        %{conv | status_code: 200, resp_body: content}
+      {:error, :enoent} ->
+        %{conv | status_code: 404, resp_body: "File not found"}
+      {:error, reason} ->
+        %{conv | status_code: 500, resp_body: "File error #{reason}"}
+    end
+  end
+
+#  def route(%{method: "GET", path: "/bears/new"} = conv) do
+#    file_path =
+#      Path.expand("../../pages", __DIR__)
+#      |> Path.join("form.html")
+#      |> File.read
+#      |> handle_file(conv)
+#  end
+#
+#  defp handle_new({:ok, content}, conv) do
+#    %{conv | status_code: 200, resp_body: content}
+#  end
+#
+#  defp handle_new({:error, :enoent}, conv) do
+#    %{conv | status_code: 404, resp_body: "File not found!"}
+#  end
+#
+#  defp handle_new({:error, reason}, conv) do
+#    %{conv | status_code: 500, resp_body: "File error: #{reason}"}
+#  end
+
+
   # The function definition will attempt to match `id` to a value that,
   # when concatenated to the path, "/bears/", will math the path of the
   # HTTP request.
@@ -280,8 +316,21 @@ Accept */*
 response = Servy.Handler.handle(request)
 
 IO.puts(response)
+
 request = """
 GET /about HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept */*
+
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts(response)
+
+request = """
+GET /bears/new HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept */*
