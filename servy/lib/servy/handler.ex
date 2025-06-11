@@ -8,6 +8,7 @@ defmodule Servy.Handler do
   # the function.
   import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
   import Servy.Parser, only: [parse: 1]
+  import Servy.FileHandler, only: [handle_file: 2]
 
   @doc "Transforms a request into the appropriate response"
   def handle(request) do
@@ -135,18 +136,6 @@ defmodule Servy.Handler do
       resp_body: "No #{path} here",
       status_code: 404,
     }
-  end
-
-  defp handle_file({:ok, content}, conv) do
-    %{conv | status_code: 200, resp_body: content}
-  end
-
-  defp handle_file({:error, :enoent}, conv) do
-    %{conv | status_code: 404, resp_body: "File not found!"}
-  end
-
-  defp handle_file({:error, reason}, conv) do
-    %{conv | status_code: 500, resp_body: "File error: #{reason}"}
   end
 
   def format_response(conv) do
