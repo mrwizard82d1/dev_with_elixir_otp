@@ -6,11 +6,13 @@ defmodule Servy.Parser do
       |> List.first
       |> String.split(" ")
 
-    %{
+    %Servy.Conv{
       method: method,
-      path: path,
-      resp_body: "",
-      status_code: 500,
+      path: path
+      # Because the `Server.Conv struct` provides defaults, the following
+      # code is no longer needed.
+      # resp_body: "",
+      # status_code: 500,
     }
   end
 end
