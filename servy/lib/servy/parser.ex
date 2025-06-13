@@ -1,6 +1,6 @@
 defmodule Servy.Parser do
 
-  alias Servy.Conv, as: Conv
+  alias Servy.Conv
 
   def parse(request) do
     [method, path, _] =
