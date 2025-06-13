@@ -2,6 +2,8 @@ defmodule Servy.Handler do
 
   @moduledoc "Handles HTTP requests."
 
+  alias Servy.Conv
+
   @pages_path Path.expand("../../pages", __DIR__)
 
   # Remember that the number value in the list is the **arity** of
@@ -21,10 +23,6 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-#  def route(conv) do
-#    route(conv, conv.method, conv.path)
-#  end
-
   # The following two "functions" are actually **function clauses**. Each
   # clause of `route/3` handles an HTTP method **and** path. Elixir
   # itself uses **pattern matching** to decide which of these two clauses
@@ -34,7 +32,7 @@ defmodule Servy.Handler do
   # **two** elements of the request: the path **and the method**. Let's
   # add a parameter for the request method (although currently,
   # effectively unused.)
-  def route(%{method: "GET", path: "/wildthings"} = conv) do
+  def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
     %{
       conv |
       resp_body: "Bears, Lions, Tigers",
@@ -42,7 +40,7 @@ defmodule Servy.Handler do
     }
   end
 
-  def route(%{method: "GET", path: "/bears"} = conv) do
+  def route(%Conv{method: "GET", path: "/bears"} = conv) do
     %{
       conv |
       resp_body: "Teddy, Smokey, Paddington",
@@ -50,7 +48,7 @@ defmodule Servy.Handler do
     }
   end
 
-  def route(%{method: "GET", path: "/bears/new"} = conv) do
+  def route(%Conv{method: "GET", path: "/bears/new"} = conv) do
     file_path =
       @pages_path
       |> Path.join("form.html")
@@ -65,31 +63,10 @@ defmodule Servy.Handler do
     end
   end
 
-#  def route(%{method: "GET", path: "/bears/new"} = conv) do
-#    file_path =
-#      Path.expand("../../pages", __DIR__)
-#      |> Path.join("form.html")
-#      |> File.read
-#      |> handle_file(conv)
-#  end
-#
-#  defp handle_new({:ok, content}, conv) do
-#    %{conv | status_code: 200, resp_body: content}
-#  end
-#
-#  defp handle_new({:error, :enoent}, conv) do
-#    %{conv | status_code: 404, resp_body: "File not found!"}
-#  end
-#
-#  defp handle_new({:error, reason}, conv) do
-#    %{conv | status_code: 500, resp_body: "File error: #{reason}"}
-#  end
-
-
   # The function definition will attempt to match `id` to a value that,
   # when concatenated to the path, "/bears/", will math the path of the
   # HTTP request.
-  def route(%{method: "GET", path: "/bears/" <> id} = conv) do
+  def route(%Conv{method: "GET", path: "/bears/" <> id} = conv) do
     %{
       conv |
       resp_body: "Bear #{id}",
@@ -97,7 +74,7 @@ defmodule Servy.Handler do
     }
   end
 
-  def route(%{method: "DELETE", path: "/bears/" <> _id} = conv) do
+  def route(%Conv{method: "DELETE", path: "/bears/" <> _id} = conv) do
     %{
       conv |
       resp_body: "Deleting a bear is forbidden!",
@@ -105,30 +82,15 @@ defmodule Servy.Handler do
     }
   end
 
-  def route(%{method: "GET", path: "/about"} = conv) do
+  def route(%Conv{method: "GET", path: "/about"} = conv) do
       Path.expand("../../pages", __DIR__)
       |> Path.join("about.html")
       |> File.read
       |> handle_file(conv)
   end
 
-#  def route(%{method: "GET", path: "/about"} = conv) do
-#    file_path =
-#      Path.expand("../../pages", __DIR__)
-#      |> Path.join("about.html")
-#
-#    case File.read(file_path) do
-#      {:ok, content} ->
-#        %{conv | status_code: 200, resp_body: content}
-#      {:error, :enoent} ->
-#        %{conv | status_code: 404, resp_body: "File not found"}
-#      {:error, reason} ->
-#        %{conv | status_code: 500, resp_body: "File error #{reason}"}
-#    end
-#  end
-
   # Define a "catch-all" route in the right place.
-  def route(%{method: _method, path: path} = conv) do
+  def route(%Conv{method: _method, path: path} = conv) do
     # Because we **did not** find the requested resource, we
     # return a 404 status code
     %{
@@ -138,7 +100,7 @@ defmodule Servy.Handler do
     }
   end
 
-  def format_response(conv) do
+  def format_response(%Conv{} = conv) do
     # A HERE doc describing the expected response.
     #
     # We expect three header lines, a blank line, and a response line.
