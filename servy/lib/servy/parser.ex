@@ -1,4 +1,7 @@
 defmodule Servy.Parser do
+
+  alias Servy.Conv, as: Conv
+
   def parse(request) do
     [method, path, _] =
       request
@@ -6,13 +9,9 @@ defmodule Servy.Parser do
       |> List.first
       |> String.split(" ")
 
-    %Servy.Conv{
+    %Conv{
       method: method,
       path: path
-      # Because the `Server.Conv struct` provides defaults, the following
-      # code is no longer needed.
-      # resp_body: "",
-      # status_code: 500,
     }
   end
 end
