@@ -82,6 +82,18 @@ defmodule Servy.Handler do
     }
   end
 
+  # Creating a new bear.
+  #
+  # For example, the content of the POST request is
+  # "name=Baloo&type=Brown"
+  def route(%Conv{method: "POST", path: "/bears"} = conv) do
+    %{
+      conv |
+      status_code: 201,
+      resp_body: "Create a bear!",
+    }
+  end
+
   def route(%Conv{method: "GET", path: "/about"} = conv) do
       Path.expand("../../pages", __DIR__)
       |> Path.join("about.html")
@@ -241,3 +253,18 @@ IO.puts(response)
 #response = Servy.Handler.handle(request)
 #
 #IO.puts(response)
+
+request = """
+POST /bears HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept */*
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 21
+
+name=Baloo&type=Brown
+"""
+
+response = Servy.Handler.handle(request)
+
+IO.puts(response)
