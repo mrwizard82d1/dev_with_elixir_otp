@@ -87,11 +87,10 @@ defmodule Servy.Handler do
   # For example, the content of the POST request is
   # "name=Baloo&type=Brown"
   def route(%Conv{method: "POST", path: "/bears"} = conv) do
-    params = %{ "name" => "Baloo", "type" => "Brown" }
     %{
       conv |
       status_code: 201,
-      resp_body: "Created a #{params["type"]} bear named #{params["name"]}!",
+      resp_body: "Created a #{conv.params["type"]} bear named #{conv.params["name"]}!",
     }#
   end
 
