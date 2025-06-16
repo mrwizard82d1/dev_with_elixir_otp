@@ -1,10 +1,9 @@
 defmodule Recurse do
-  def sum([head | tail]) do
-    IO.puts "Head: #{head}, Tail: #{inspect(tail)}"
-    head + sum(tail)
+  def sum([head | tail], total) do
+    sum(tail, head + total)
   end
 
-  def sum([]), do: 0
+  def sum([], total), do: total
 
   def triple([head | tail]) do
     IO.puts "Head: #{head}, Tail: #{inspect(tail)}"
@@ -14,8 +13,8 @@ defmodule Recurse do
   def triple([]), do: []
 end
 
-total = Recurse.sum([1, 2, 3, 4, 5])
-IO.puts "The total is #{total}"
+total = Recurse.sum([1, 2, 3, 4, 5], 0)
+IO.puts "The sum is #{total}"
 
 IO.puts ""
 
