@@ -147,7 +147,7 @@ request = """
 GET /wildthings HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
-Accept */*
+Accept: */*
 
 """
 
@@ -159,7 +159,7 @@ request = """
 GET /bears HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
-Accept */*
+Accept: */*
 
 """
 
@@ -171,7 +171,7 @@ request = """
 GET /big_foot HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
-Accept */*
+Accept: */*
 
 """
 
@@ -184,7 +184,7 @@ request = """
 GET /bears/1 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
-Accept */*
+Accept: */*
 
 """
 
@@ -197,7 +197,7 @@ request = """
 DELETE /bears/1 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
-Accept */*
+Accept: */*
 
 """
 
@@ -209,7 +209,7 @@ request = """
 GET /wildlife HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
-Accept */*
+Accept: */*
 
 """
 
@@ -222,7 +222,7 @@ request = """
 GET /bears?id=1 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
-Accept */*
+Accept: */*
 
 """
 
@@ -234,7 +234,7 @@ request = """
 GET /about HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
-Accept */*
+Accept: */*
 
 """
 
@@ -246,7 +246,7 @@ IO.puts(response)
 #GET /bears/new HTTP/1.1
 #Host: example.com
 #User-Agent: ExampleBrowser/1.0
-#Accept */*
+#Accept: */*
 #
 #"""
 #
@@ -258,7 +258,7 @@ request = """
 POST /bears HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
-Accept */*
+Accept: */*
 Content-Type: application/x-www-form-urlencoded
 Content-Length: 21
 

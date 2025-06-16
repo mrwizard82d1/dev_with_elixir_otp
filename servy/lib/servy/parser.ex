@@ -7,21 +7,39 @@ defmodule Servy.Parser do
     [top, params_string] = String.split(request, "\n\n")
 
     # Split the "top" into the request line and the header **lines**.
-    [request_line | _header_lines] = String.split(top, "\n")
+    [request_line | header_lines] = String.split(top, "\n")
 
     [method, path, _] = String.split(request_line, " ")
 
+    headers = parse_headers(header_lines)
+
     params = parse_params(params_string)
 
-    # This implementation works, but it is insufficient. (It does not capture
-    # the HTTP headers.)
+    IO.inspect header_lines
 
     %Conv{
       method: method,
       path: path,
       params: params,
+      headers: headers,
     }
   end
+
+  def parse_headers([head | tail]) do
+    IO.puts "Head: #{inspect(head)}, Tail #{inspect(tail)}}"
+
+    [key, value] = String.split(head, ": ")
+
+    IO.puts "Key: #{inspect(key)}, Value: #{inspect(value)}"
+
+    headers = Map.put(%{}, key, value)
+
+    IO.inspect(headers)
+
+    parse_headers(tail)
+  end
+
+  def parse_headers([]), do: IO.puts("Done!")
 
   defp parse_params(params_string) do
     params_string
