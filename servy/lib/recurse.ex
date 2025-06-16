@@ -1,10 +1,11 @@
 defmodule Recurse do
-  def loopy([head | tail]) do
+  def sum([head | tail]) do
     IO.puts "Head: #{head}, Tail: #{inspect(tail)}"
-    loopy(tail)
+    head + sum(tail)
   end
 
-  def loopy([]), do: IO.puts "Done!"
+  def sum([]), do: 0
 end
 
-Recurse.loopy([1, 2, 3, 4, 5])
+total = Recurse.sum([1, 2, 3, 4, 5])
+IO.puts "The total is #{total}"
