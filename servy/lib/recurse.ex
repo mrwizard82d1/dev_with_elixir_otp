@@ -5,12 +5,15 @@ defmodule Recurse do
 
   def sum([], total), do: total
 
-  def triple([head | tail]) do
-    IO.puts "Head: #{head}, Tail: #{inspect(tail)}"
-    [3 * head | triple(tail)]
+  def triple(l), do: triple(l, [])
+
+  defp triple([head | tail], result) do
+    triple(tail, [3 * head | result])
   end
 
-  def triple([]), do: []
+  defp triple([], result) do
+    Enum.reverse(result)
+  end
 end
 
 total = Recurse.sum([1, 2, 3, 4, 5], 0)
