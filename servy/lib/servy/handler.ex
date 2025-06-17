@@ -3,6 +3,7 @@ defmodule Servy.Handler do
   @moduledoc "Handles HTTP requests."
 
   alias Servy.Conv
+  alias Servy.BearController
 
   @pages_path Path.expand("../../pages", __DIR__)
 
@@ -41,11 +42,7 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/bears"} = conv) do
-    %{
-      conv |
-      resp_body: "Teddy, Smokey, Paddington",
-      status_code: 200,
-    }
+    BearController.index(conv)
   end
 
   def route(%Conv{method: "GET", path: "/bears/new"} = conv) do
@@ -67,11 +64,8 @@ defmodule Servy.Handler do
   # when concatenated to the path, "/bears/", will math the path of the
   # HTTP request.
   def route(%Conv{method: "GET", path: "/bears/" <> id} = conv) do
-    %{
-      conv |
-      resp_body: "Bear #{id}",
-      status_code: 200,
-    }
+    params = Map.put(conv.params, "id", id)
+    BearController.show(conv, params)
   end
 
   def route(%Conv{method: "DELETE", path: "/bears/" <> _id} = conv) do
@@ -87,11 +81,7 @@ defmodule Servy.Handler do
   # For example, the content of the POST request is
   # "name=Baloo&type=Brown"
   def route(%Conv{method: "POST", path: "/bears"} = conv) do
-    %{
-      conv |
-      status_code: 201,
-      resp_body: "Created a #{conv.params["type"]} bear named #{conv.params["name"]}!",
-    }#
+    BearController.create(conv, conv.params)
   end
 
   def route(%Conv{method: "GET", path: "/about"} = conv) do
