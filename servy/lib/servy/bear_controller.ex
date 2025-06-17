@@ -5,7 +5,7 @@ defmodule Servy.BearController do
   def index(conv) do
     items =
       WildThings.list_bears()
-      |> Enum.filter(fn b -> b.type == "Grizzly" end)
+      |> Enum.filter(fn item -> item.type == "Grizzly" end)
       |> Enum.sort(fn left, right -> left.name <= right.name end)
       |> Enum.map(fn b -> "<li>#{b.name} - #{b.type}</li>" end)
       |> Enum.join
@@ -18,9 +18,11 @@ defmodule Servy.BearController do
   end
 
   def show(conv, %{"id" => id}) do
+    bear = WildThings.get_bear(id)
+
     %{
       conv |
-      resp_body: "Bear #{id}",
+      resp_body: "Bear #{bear.id} - <h1>#{bear.name}</h1>",
       status_code: 200,
     }
   end
