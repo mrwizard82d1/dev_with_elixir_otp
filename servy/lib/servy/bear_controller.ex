@@ -1,5 +1,12 @@
 defmodule Servy.BearController do
+
+  alias Servy.WildThings
+
   def index(conv) do
+    bears = WildThings.list_bears()
+
+    # TODO: Transform the list of bears to an HTML list
+
     %{
       conv |
       resp_body: "Teddy, Smokey, Paddington" ,
