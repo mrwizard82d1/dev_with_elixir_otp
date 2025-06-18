@@ -3,5 +3,5 @@
 <ul>
     <%= Enum.map(bears, fn(bear) -> %>
     <li><%= bear.name %> - <%= bear.type %></li>
-    <%= end) %>
+    <% end) %>
 </ul>
