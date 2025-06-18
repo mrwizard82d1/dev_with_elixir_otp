@@ -17,7 +17,7 @@ defmodule Servy.BearController do
 
     %{
       conv |
-      resp_body: content ,
+      resp_body: content,
       status_code: 200,
     }
   end
@@ -25,9 +25,17 @@ defmodule Servy.BearController do
   def show(conv, %{"id" => id}) do
     bear = WildThings.get_bear(id)
 
+    IO.puts "Showing the bear with id=#{id}"
+    IO.inspect bear
+
+    content =
+      @templates_path
+      |> Path.join("show.eex")
+      |> EEx.eval_file(bear: bear)
+
     %{
       conv |
-      resp_body: "Bear #{bear.id} - <h1>#{bear.name}</h1>",
+      resp_body: content,
       status_code: 200,
     }
   end
