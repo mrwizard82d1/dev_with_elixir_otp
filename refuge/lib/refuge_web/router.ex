@@ -35,9 +35,9 @@ defmodule RefugeWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", RefugeWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", RefugeWeb do
+    pipe_through :api
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:refuge, :dev_routes) do
