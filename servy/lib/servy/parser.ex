@@ -3,10 +3,10 @@ defmodule Servy.Parser do
 
   def parse(request) do
     # Split on the blank line (two newline characters) before the request body.
-    [top, params_string] = String.split(request, "\n\n")
+    [top, params_string] = String.split(request, "\r\n\r\n")
 
     # Split the "top" into the request line and the header **lines**.
-    [request_line | header_lines] = String.split(top, "\n")
+    [request_line | header_lines] = String.split(top, "\r\n")
 
     [method, path, _] = String.split(request_line, " ")
 
