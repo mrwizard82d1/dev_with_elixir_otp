@@ -1,5 +1,4 @@
 defmodule Servy.Handler do
-
   @moduledoc "Handles HTTP requests."
 
   alias Servy.Conv
@@ -35,9 +34,9 @@ defmodule Servy.Handler do
   # effectively unused.)
   def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
     %{
-      conv |
-      resp_body: "Bears, Lions, Tigers",
-      status_code: 200,
+      conv
+      | resp_body: "Bears, Lions, Tigers",
+        status_code: 200
     }
   end
 
@@ -53,8 +52,10 @@ defmodule Servy.Handler do
     case File.read(file_path) do
       {:ok, content} ->
         %{conv | status_code: 200, resp_body: content}
+
       {:error, :enoent} ->
         %{conv | status_code: 404, resp_body: "File not found"}
+
       {:error, reason} ->
         %{conv | status_code: 500, resp_body: "File error #{reason}"}
     end
@@ -81,10 +82,10 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/about"} = conv) do
-      Path.expand("../../pages", __DIR__)
-      |> Path.join("about.html")
-      |> File.read
-      |> handle_file(conv)
+    Path.expand("../../pages", __DIR__)
+    |> Path.join("about.html")
+    |> File.read()
+    |> handle_file(conv)
   end
 
   # Define a "catch-all" route in the right place.
@@ -92,9 +93,9 @@ defmodule Servy.Handler do
     # Because we **did not** find the requested resource, we
     # return a 404 status code
     %{
-      conv |
-      resp_body: "No #{path} here",
-      status_code: 404,
+      conv
+      | resp_body: "No #{path} here",
+        status_code: 404
     }
   end
 
@@ -125,21 +126,6 @@ defmodule Servy.Handler do
     """
   end
 end
-
-# Utilizes an Elixir "HERE Doc"
-# An empty (blank) line separates the header from the body. We have no body,
-# but we still need the empty line.
-request = """
-GET /wildthings HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-response = Servy.Handler.handle(request)
-
-IO.puts(response)
 
 request = """
 GET /big_foot HTTP/1.1
