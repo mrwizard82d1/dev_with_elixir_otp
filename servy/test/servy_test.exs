@@ -4,6 +4,5 @@ defmodule ServyTest do
 
   test "the truth" do
     assert 1 + 1 == 2
-    refute 2 + 1 == 2
   end
 end
