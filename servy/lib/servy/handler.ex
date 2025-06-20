@@ -128,18 +128,6 @@ defmodule Servy.Handler do
 end
 
 # request = """
-# GET /big_foot HTTP/1.1
-# Host: example.com
-# User-Agent: ExampleBrowser/1.0
-# Accept: */*
-
-# """
-
-# response = Servy.Handler.handle(request)
-
-# IO.puts(response)
-
-# request = """
 # GET /wildlife HTTP/1.1
 # Host: example.com
 # User-Agent: ExampleBrowser/1.0
