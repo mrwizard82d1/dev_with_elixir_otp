@@ -2,8 +2,11 @@ defmodule Servy.Plugins do
   alias Servy.Conv
 
   @doc "Logs 404 requests"
-  def track(%Conv{status_code: 404, path: _path} = conv) do
-    # IO.puts("Warning: #{path} is on the loose!")
+  def track(%Conv{status_code: 404, path: path} = conv) do
+    if Mix.env() != :test do
+      IO.puts("Warning: #{path} is on the loose!")
+    end
+
     conv
   end
 
@@ -37,8 +40,11 @@ defmodule Servy.Plugins do
   # Because `IO.inspect/1` returns its argument, we can simplify this code
   # to a "one-liner."
   # def log(%Conv{} = conv), do: IO.inspect conv
-  # Empty logger to simplify screen output
-  def log(conv) do
+  def log(%Conv{} = conv) do
+    if Mix.env() == :dev do
+      IO.inspect(conv)
+    end
+
     conv
   end
 end
