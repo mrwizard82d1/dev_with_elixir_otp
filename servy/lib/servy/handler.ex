@@ -40,6 +40,10 @@ defmodule Servy.Handler do
     }
   end
 
+  def route(%Conv{method: "GET", path: "/api/bears"} = conv) do
+    Servy.Api.BearController.index(conv)
+  end
+
   def route(%Conv{method: "GET", path: "/bears"} = conv) do
     BearController.index(conv)
   end
@@ -119,7 +123,7 @@ defmodule Servy.Handler do
     #
     """
     HTTP/1.1 #{Conv.full_status(conv)}\r
-    Content-Type: text/html\r
+    Content-Type: #{conv.resp_content_type}\r
     Content-Length: #{byte_size(conv.resp_body)}\r
     \r
     #{conv.resp_body}
