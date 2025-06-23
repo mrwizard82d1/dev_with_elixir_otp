@@ -254,7 +254,7 @@ defmodule HandlerTest do
     response = handle(request)
 
     assert response == """
-           HTTP/1.1 201 Created
+           HTTP/1.1 201 Created\r
            Content-Type: text/html\r
            Content-Length: 35\r
            \r

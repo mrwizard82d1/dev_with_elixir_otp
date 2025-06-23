@@ -41,10 +41,6 @@ defmodule Servy.Handler do
     }
   end
 
-  def route(%Conv{method: "GET", path: "/api/bears"} = conv) do
-    Servy.Api.BearController.index(conv)
-  end
-
   def route(%Conv{method: "GET", path: "/bears"} = conv) do
     BearController.index(conv)
   end
@@ -91,6 +87,14 @@ defmodule Servy.Handler do
     |> Path.join("about.html")
     |> File.read()
     |> handle_file(conv)
+  end
+
+  def route(%Conv{method: "GET", path: "/api/bears"} = conv) do
+    Servy.Api.BearController.index(conv)
+  end
+
+  def route(%Conv{method: "POST", path: "/api/bears"} = conv) do
+    Servy.Api.BearController.create(conv)
   end
 
   # Define a "catch-all" route in the right place.
