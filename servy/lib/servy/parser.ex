@@ -50,7 +50,7 @@ defmodule Servy.Parser do
   def parse_params("application/json", params_string) do
     params_string
     |> String.trim()
-    |> JSON.decode!
+    |> Poison.Parser.parse!(%{})
   end
 
   def parse_params(_, _), do: %{}

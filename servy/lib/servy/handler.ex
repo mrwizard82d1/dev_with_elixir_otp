@@ -94,7 +94,7 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "POST", path: "/api/bears"} = conv) do
-    Servy.Api.BearController.create(conv)
+    Servy.Api.BearController.create(conv, conv.params)
   end
 
   # Define a "catch-all" route in the right place.

@@ -13,13 +13,13 @@ defmodule Servy.Api.BearController do
     }
   end
 
-  def create(conv) do
+  def create(conv, %{"name" => name, "type" => type}) do
     conv = put_resp_content_type(conv, "text/html")
 
     %{
       conv
       | status_code: 201,
-        resp_body: "Created a #{conv.params["type"]} bear named #{conv.params["name"]}!"
+        resp_body: "Created a #{type} bear named #{name}!"
     }
   end
 
