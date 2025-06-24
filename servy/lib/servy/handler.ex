@@ -97,6 +97,15 @@ defmodule Servy.Handler do
     Servy.Api.BearController.create(conv, conv.params)
   end
 
+  def route(%Conv{method: "GET", path: "/pages/" <> name} = conv) do
+    @pages_path
+    |> Path.join("#{name}.md")
+    |> IO.inspect(label: "URL")
+    |> File.read()
+    |> handle_file(conv)
+    |> markdown_to_html
+  end
+
   # Define a "catch-all" route in the right place.
   def route(%Conv{method: _method, path: path} = conv) do
     # Because we **did not** find the requested resource, we
@@ -148,4 +157,10 @@ defmodule Servy.Handler do
       | resp_headers: Map.put(conv.resp_headers, "Content-Length", byte_size(conv.resp_body))
     }
   end
+
+  def markdown_to_html(%Conv{status_code: 200} = conv) do
+    %{conv | resp_body: Earmark.as_html!(conv.resp_body)}
+  end
+
+  def markdown_to_html(%Conv{} = conv), do: conv
 end
