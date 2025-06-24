@@ -5,6 +5,7 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/lib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/earmark" />
       <excludeFolder url="file://$MODULE_DIR$/deps" />
     </content>
     <orderEntry type="jdk" jdkName="Elixir at /opt/homebrew/Cellar/elixir/1.18.3/lib/elixir" jdkType="Elixir SDK" />
