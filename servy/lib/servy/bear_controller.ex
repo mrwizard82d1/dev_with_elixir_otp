@@ -11,13 +11,6 @@ defmodule Servy.BearController do
     View.render(conv, "index.eex", bears: bears)
   end
 
-  def faq(conv) do
-    faq =
-      WildThings.read_faq()
-
-    View.render(conv, "faq.eex", faq: faq)
-  end
-
   def show(conv, %{"id" => id}) do
     bear = WildThings.get_bear(id)
 

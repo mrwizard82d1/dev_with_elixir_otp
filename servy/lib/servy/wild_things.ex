@@ -29,11 +29,4 @@ defmodule Servy.WildThings do
     |> String.to_integer
     |> get_bear
   end
-
-  def read_faq() do
-    IO.puts("Servy.WildThings.read_faq() called")
-
-
-    IO.puts("Servy.WildThings.read_faq() returns")
-  end
 end
