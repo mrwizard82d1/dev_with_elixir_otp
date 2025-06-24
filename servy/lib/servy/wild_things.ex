@@ -2,10 +2,21 @@ defmodule Servy.WildThings do
   alias Servy.Bear
 
   def list_bears do
-    "lib/servy/db/bears.json"
-      |> File.read!
-      |> Poison.decode!(as: %{"bears" => [%Bear{}]})
-      |> Map.get("bears")
+    Path.expand("./db", __DIR__)
+    |> Path.join("bears.json")
+    |> read_json
+    |> Poison.decode!(as: %{"bears" => [%Bear{}]})
+    |> Map.get("bears")
+  end
+
+  def read_json(source) do
+    case File.read(source) do
+      {:ok, contents} ->
+        contents
+      {:error, reason} ->
+        IO.inspect "Error reading #{source}: #{reason}"
+        []
+    end
   end
 
   def get_bear(id) when is_integer(id) do
