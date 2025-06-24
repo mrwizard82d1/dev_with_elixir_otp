@@ -207,6 +207,46 @@ defmodule HandlerTest do
            """
   end
 
+  test "GET /faq" do
+    request = """
+    GET /faq HTTP/1.1\r
+    Host: example.com\r
+    User-Agent: ExampleBrowser/1.0\r
+    Accept: */*\r
+    \r
+    """
+
+    response = handle(request)
+
+    assert response == """
+           HTTP/1.1 200 OK\r
+           Content-Type: text/html\r
+           Content-Length: 20\r
+           \r
+           <h1>Frequently Asked Questions</h1>
+
+           - <h2>Have you really seen Bigfoot</h2>
+
+             Yes! In this [totally believable video](https://www.youtube.com/watch?v=ZMBeN4Kr4LE)!
+
+           - <h2>No, I mean seen Bigfoot *on the refuge*?</h2>
+
+             Oh! Not yet, but we're *still looking*...
+
+           - <h2>No, I mean seen Bigfoot *on the refuge*?</h2>
+
+             Oh! Not yet, but we're *still looking*...
+
+           - <h2>**Can you just show me some code?**</h2>
+
+             Sure! Here's some Elixir:
+
+             ```elixir
+             ["Bigfoot", "Yeti", "Sasquatch"] |> Enum.random()
+             ```
+           """
+  end
+
   test "GET /api/bears" do
     request = """
     GET /api/bears HTTP/1.1\r

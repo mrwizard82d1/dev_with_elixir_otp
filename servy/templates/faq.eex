@@ -1,0 +1,7 @@
+<h1><%= faq.title %></h1>
+
+<ul>
+  <%= for %{item} <- faq.items do %>
+    <li><%= item.question %> - <%= item.answer %></li>
+  <% end %>
+</ul>
