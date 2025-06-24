@@ -1,17 +1,32 @@
 defmodule DeckOfCards do
   def ranks() do
     [
-      "2", "3", "4", "5", "6", "7", "8", "9", "10",
-      "J", "Q", "K", "A"
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "J",
+      "Q",
+      "K",
+      "A"
     ]
   end
 
   def suits() do
     [
-      "C", # clubs
-      "D", # diamonds
-      "H", # hearts
-      "S", # spades
+      # clubs
+      "C",
+      # diamonds
+      "D",
+      # hearts
+      "H",
+      # spades
+      "S"
     ]
   end
 

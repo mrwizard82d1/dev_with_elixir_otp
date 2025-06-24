@@ -23,20 +23,20 @@ defmodule Recurse do
 end
 
 total = Recurse.sum([1, 2, 3, 4, 5], 0)
-IO.puts "The sum is #{total}"
+IO.puts("The sum is #{total}")
 
-IO.puts ""
+IO.puts("")
 
 tripled = Recurse.triple([1, 2, 3, 4, 5])
-IO.puts "The tripled list is #{inspect(tripled)}"
+IO.puts("The tripled list is #{inspect(tripled)}")
 
 double = &(2 * &1)
 triple = &(3 * &1)
 quadruple = &(4 * &1)
 
 doubled = Recurse.my_map([1, 2, 3, 4, 5], double)
-IO.puts "The mapped list using double/1 is #{inspect(doubled)}"
+IO.puts("The mapped list using double/1 is #{inspect(doubled)}")
 tripled = Recurse.my_map([1, 2, 3, 4, 5], triple)
-IO.puts "The mapped list using triple/1 is #{inspect(tripled)}"
+IO.puts("The mapped list using triple/1 is #{inspect(tripled)}")
 quadrupled = Recurse.my_map([1, 2, 3, 4, 5], quadruple)
-IO.puts "The mapped list using quadruple/1 is #{inspect(quadrupled)}"
+IO.puts("The mapped list using quadruple/1 is #{inspect(quadrupled)}")

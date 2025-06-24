@@ -13,20 +13,21 @@ defmodule Servy.WildThings do
     case File.read(source) do
       {:ok, contents} ->
         contents
+
       {:error, reason} ->
-        IO.inspect "Error reading #{source}: #{reason}"
+        IO.inspect("Error reading #{source}: #{reason}")
         []
     end
   end
 
   def get_bear(id) when is_integer(id) do
-    Enum.find(list_bears(), fn(candidate) -> candidate.id == id end)
+    Enum.find(list_bears(), fn candidate -> candidate.id == id end)
   end
 
   # Remember that a string in Elixir (and Erlang) is a **binary**.
   def get_bear(id) when is_binary(id) do
     id
-    |> String.to_integer
+    |> String.to_integer()
     |> get_bear
   end
 end
