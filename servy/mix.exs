@@ -14,7 +14,11 @@ defmodule Servy.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      # The notes recommend including the :runtime_tools
+      # in the :extra_applications. I did not seem to need
+      # this application. Additionally, the notes indicated
+      # that I had already included :eex which I have not.
+      extra_applications: [:logger, :observer, :wx]
     ]
   end
 
