@@ -24,15 +24,12 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  # The following two "functions" are actually **function clauses**. Each
-  # clause of `route/3` handles an HTTP method **and** path. Elixir
-  # itself uses **pattern matching** to decide which of these two clauses
-  # it will execute at run-time.
-  #
-  # The choice of the route to fulfill the request actually depends on
-  # **two** elements of the request: the path **and the method**. Let's
-  # add a parameter for the request method (although currently,
-  # effectively unused.)
+  def route(%Conv{method: "GET", path: "/hibernate/" <> time} = conv) do
+    time |> String.to_integer() |> :timer.sleep()
+
+    %{conv | status_code: 200, resp_body: "Awake!"}
+  end
+
   def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
     %{
       conv
