@@ -8,7 +8,8 @@ defmodule Servy.Handler do
 
   # Remember that the number value in the list is the **arity** of
   # the function.
-  import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
+  # import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
+  import Servy.Plugins, only: [rewrite_path: 1, track: 1]
   import Servy.Parser, only: [parse: 1]
   import Servy.FileHandler, only: [handle_file: 2]
 
@@ -17,11 +18,16 @@ defmodule Servy.Handler do
     request
     |> parse
     |> rewrite_path
-    |> log
+    # |> log
     |> route
     |> track
     |> put_content_length
     |> format_response
+  end
+
+  # The following route will **kill** our current server implementation
+  def route(%Conv{method: "GET", path: "/kaboom"} = _conv) do
+    raise "Kaboom!"
   end
 
   def route(%Conv{method: "GET", path: "/hibernate/" <> time} = conv) do
