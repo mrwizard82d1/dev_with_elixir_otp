@@ -33,7 +33,8 @@ defmodule Servy.HttpServer do
 
     # Receives the request and sends a response over the client socket.
     # serve(client_socket)
-    spawn(fn -> serve(client_socket) end)
+    pid = spawn(fn -> serve(client_socket) end)
+    :ok = :gen_tcp.controlling_process(client_socket, pid)
 
     # Loop back to wait and accept the next connection.
     accept_loop(listen_socket)
