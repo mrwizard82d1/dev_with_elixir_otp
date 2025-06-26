@@ -27,9 +27,9 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{ method: "GET", path: "/snapshots"} = conv) do
-    snapshot1 = VideoCam.get_snapshot("cam-1")
-    snapshot2 = VideoCam.get_snapshot("cam-2")
-    snapshot3 = VideoCam.get_snapshot("cam-3")
+    snapshot1 = spawn(fn -> VideoCam.get_snapshot("cam-1") end)
+    snapshot2 = spawn(fn ->  VideoCam.get_snapshot("cam-2") end)
+    snapshot3 = spawn(fn -> VideoCam.get_snapshot("cam-3") end)
 
     snapshots = [snapshot1, snapshot2, snapshot3]
 
