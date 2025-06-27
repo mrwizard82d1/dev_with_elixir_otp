@@ -15,23 +15,11 @@ defmodule HttpServerTest do
   test "accepts a request on a socket and sends back the respons" do
     spawn(HttpServer, :start, [test_port()])
 
-    request = """
-    GET /wildthings HTTP/1.1\r
-    Host: example.com\r
-    User-Agent: ExampleBrowser/1.0\r
-    Accept: */*\r
-    \r
-    """
+    {:ok, %{status_code: status_code, body: body}} =
+      HTTPoison.get("http://localhost:4000/wildthings")
 
-    response = HttpClient.send_request(request)
-
-    assert response == """
-    HTTP/1.1 200 OK\r
-    Content-Type: text/html\r
-    Content-Length: 20\r
-    \r
-    Bears, Lions, Tigers
-    """
+    assert status_code == 200
+    assert body == "Bears, Lions, Tigers"
   end
 
   defp test_port do

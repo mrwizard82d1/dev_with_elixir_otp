@@ -30,10 +30,10 @@ defmodule UserApi do
   end
 end
 
-case UserApi.query("1") do
-  {:ok, city} ->
-    city
+# case UserApi.query("1") do
+#   {:ok, city} ->
+#     city
 
-  {:error, error} ->
-    "Whoops! #{error}"
-end
+#   {:error, error} ->
+#     "Whoops! #{error}"
+# end
