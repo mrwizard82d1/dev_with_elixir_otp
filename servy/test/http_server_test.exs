@@ -14,33 +14,19 @@ defmodule HttpServerTest do
   test "accepts a request on a socket and sends back the respons" do
     spawn(HttpServer, :start, [test_port()])
 
-    parent = self()
-
     max_concurrent_requests = 5
 
-    tasks =
-      for _ <- 1..max_concurrent_requests do
-        Task.async(fn ->
-          result = HTTPoison.get("http://localhost:4000/wildthings")
-          send(parent, result)
-        end)
-      end
+    url = "http://localhost:4000/wildthings"
 
-    results =
-      for task <- tasks do
-        Task.await(task)
-      end
+    1..max_concurrent_requests
+    |> Enum.map(fn _ -> Task.async(fn -> HTTPoison.get(url) end) end)
+    |> Enum.map(&Task.await/1)
+    |> Enum.map(&assert_successful_response/1)
+  end
 
-    for result <- results do
-      case result do
-        {:ok, %{status_code: status_code, body: body}} ->
-          assert status_code == 200
-          assert body == "Bears, Lions, Tigers"
-
-        unexpected ->
-          assert false, "Unexpected #{unexpected}"
-      end
-    end
+  defp assert_successful_response({:ok, response}) do
+    assert response.status_code == 200
+    assert response.body == "Bears, Lions, Tigers"
   end
 
   defp test_port do
