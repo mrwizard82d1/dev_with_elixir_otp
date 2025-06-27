@@ -2,7 +2,6 @@ defmodule HttpServerTest do
   use ExUnit.Case
 
   alias Servy.HttpServer
-  alias Servy.HttpClient
 
   @moduletag :capture_log
 
@@ -19,18 +18,24 @@ defmodule HttpServerTest do
 
     max_concurrent_requests = 5
 
-    for _ <- 1..max_concurrent_requests do
-      spawn(fn ->
-        result = HTTPoison.get("http://localhost:4000/wildthings")
-        send(parent, result)
-      end)
-    end
+    tasks =
+      for _ <- 1..max_concurrent_requests do
+        Task.async(fn ->
+          result = HTTPoison.get("http://localhost:4000/wildthings")
+          send(parent, result)
+        end)
+      end
 
-    for _ <- 1..max_concurrent_requests do
-      receive do
+    results =
+      for task <- tasks do
+        Task.await(task)
+      end
+
+    for result <- results do
+      case result do
         {:ok, %{status_code: status_code, body: body}} ->
           assert status_code == 200
-          assert body = "Bears, Lions, Tigers"
+          assert body == "Bears, Lions, Tigers"
 
         unexpected ->
           assert false, "Unexpected #{unexpected}"
