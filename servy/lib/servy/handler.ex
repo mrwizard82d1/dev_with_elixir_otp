@@ -27,9 +27,10 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/snapshots"} = conv) do
-    Fetcher.async("cam-1")
-    Fetcher.async("cam-2")
-    Fetcher.async("cam-3")
+    # spawn(fn -> send(parent, {:result, Servy.VideoCam.get_snapshot(camera_name)}) end)
+    Fetcher.async(fn -> Servy.VideoCam.get_snapshot("cam-1") end)
+    Fetcher.async(fn -> Servy.VideoCam.get_snapshot("cam-2") end)
+    Fetcher.async(fn -> Servy.VideoCam.get_snapshot("cam-3") end)
 
     snapshot1 = Fetcher.get_result()
     snapshot2 = Fetcher.get_result()
