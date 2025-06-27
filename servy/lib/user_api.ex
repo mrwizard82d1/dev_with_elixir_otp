@@ -1,18 +1,32 @@
 defmodule UserApi do
-  def query(user_id) do
-    result = HTTPoison.get("https://jsonplaceholder.typicode.com/users/#{user_id}")
+  def query(id) do
+    api_url(id)
+    |> HTTPoison.get()
+    |> handle_response
+  end
 
-    case result do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        body_map = Poison.Parser.parse!(body)
-        {:ok, get_in(body_map, ["address", "city"])}
+  defp api_url(id) do
+    "https://jsonplaceholder.typicode.com/users/#{URI.encode(id)}"
+  end
 
-      {:ok, %HTTPoison.Response{status_code: status_code, body: _body}} ->
-        {:error, "Unexpected status_code: #{status_code}"}
+  defp handle_response({:ok, %{status_code: 200, body: body}}) do
+    city =
+      Poison.Parser.parse!(body, %{})
+      |> get_in(["address", "city"])
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, reason}
-    end
+    {:ok, city}
+  end
+
+  defp handle_response({:ok, %{status_code: _status_code, body: body}}) do
+    message =
+      Poison.Parser.parse!(body, %{})
+      |> get_in(["message"])
+
+    {:error, message}
+  end
+
+  defp handle_response({:error, %{reason: reason}}) do
+    {:error, reason}
   end
 end
 
