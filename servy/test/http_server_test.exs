@@ -17,74 +17,24 @@ defmodule HttpServerTest do
 
     parent = self()
 
-    spawn(fn ->
-      result = HTTPoison.get("http://localhost:4000/wildthings")
-      send(parent, result)
-    end)
+    max_concurrent_requests = 5
 
-    spawn(fn ->
-      result = HTTPoison.get("http://localhost:4000/wildthings")
-      send(parent, result)
-    end)
-
-    spawn(fn ->
-      result = HTTPoison.get("http://localhost:4000/wildthings")
-      send(parent, result)
-    end)
-
-    spawn(fn ->
-      result = HTTPoison.get("http://localhost:4000/wildthings")
-      send(parent, result)
-    end)
-
-    spawn(fn ->
-      result = HTTPoison.get("http://localhost:4000/wildthings")
-      send(parent, result)
-    end)
-
-    receive do
-      {:ok, %{status_code: status_code, body: body}} ->
-        assert status_code == 200
-        assert body = "Bears, Lions, Tigers"
-
-      unexpected ->
-        assert false, "Unexpected #{unexpected}"
+    for _ <- 1..max_concurrent_requests do
+      spawn(fn ->
+        result = HTTPoison.get("http://localhost:4000/wildthings")
+        send(parent, result)
+      end)
     end
 
-    receive do
-      {:ok, %{status_code: status_code, body: body}} ->
-        assert status_code == 200
-        assert body = "Bears, Lions, Tigers"
+    for _ <- 1..max_concurrent_requests do
+      receive do
+        {:ok, %{status_code: status_code, body: body}} ->
+          assert status_code == 200
+          assert body = "Bears, Lions, Tigers"
 
-      unexpected ->
-        assert false, "Unexpected #{unexpected}"
-    end
-
-    receive do
-      {:ok, %{status_code: status_code, body: body}} ->
-        assert status_code == 200
-        assert body = "Bears, Lions, Tigers"
-
-      unexpected ->
-        assert false, "Unexpected #{unexpected}"
-    end
-
-    receive do
-      {:ok, %{status_code: status_code, body: body}} ->
-        assert status_code == 200
-        assert body = "Bears, Lions, Tigers"
-
-      unexpected ->
-        assert false, "Unexpected #{unexpected}"
-    end
-
-    receive do
-      {:ok, %{status_code: status_code, body: body}} ->
-        assert status_code == 200
-        assert body = "Bears, Lions, Tigers"
-
-      unexpected ->
-        assert false, "Unexpected #{unexpected}"
+        unexpected ->
+          assert false, "Unexpected #{unexpected}"
+      end
     end
   end
 
