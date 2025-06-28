@@ -16,17 +16,37 @@ defmodule HttpServerTest do
 
     max_concurrent_requests = 5
 
-    url = "http://localhost:4000/wildthings"
+    urls = [
+      "http://localhost:4000/wildthings",
+      "http://localhost:4000/bigfoot",
+      "http://localhost:4000/wildlife",
+      "http://localhost:4000/bigfoot",
+      "http://localhost:4000/wildthings"
+    ]
 
-    1..max_concurrent_requests
-    |> Enum.map(fn _ -> Task.async(fn -> HTTPoison.get(url) end) end)
-    |> Enum.map(&Task.await/1)
-    |> Enum.map(&assert_successful_response/1)
+    status_codes = [200, 404, 200, 404, 200]
+
+    bodies = [
+      "Bears, Lions, Tigers",
+      "No /bigfoot here!",
+      "Bears, Lions, Tigers",
+      "No /bigfoot here!",
+      "Bears, Lions, Tigers"
+    ]
+
+    for {url, status_code, body} <- Enum.zip([urls, status_codes, bodies]),
+        do: test_one(url, status_code, body)
   end
 
-  defp assert_successful_response({:ok, response}) do
-    assert response.status_code == 200
-    assert response.body == "Bears, Lions, Tigers"
+  def test_one(url, status_code, body) do
+    Task.async(fn -> HTTPoison.get(url) end)
+    |> Task.await()
+    |> assert_successful_response(status_code, body)
+  end
+
+  defp assert_successful_response({:ok, response}, status_code, body) do
+    assert response.status_code == status_code
+    assert response.body == body
   end
 
   defp test_port do
