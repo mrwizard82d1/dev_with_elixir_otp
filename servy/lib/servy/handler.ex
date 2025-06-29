@@ -26,6 +26,14 @@ defmodule Servy.Handler do
     |> format_response
   end
 
+  def route(%Conv{method: "POST", path: "/pledges"} = conv) do
+    Servy.PledgeController.create(conv, conv.params)
+  end
+
+  def route(%Conv{method: "GET", path: "/pledges"} = conv) do
+    Servy.PledgeController.index(conv)
+  end
+
   def route(%Conv{method: "GET", path: "/sensors"} = conv) do
     task = Task.async(fn -> Servy.Tracker.get_location("bigfoot") end)
 
@@ -40,12 +48,6 @@ defmodule Servy.Handler do
       snapshots: snapshots,
       location: where_is_bigfoot
     )
-
-    # %{
-    #   conv
-    #   | status_code: 200,
-    #     resp_body: inspect({snapshots, where_is_bigfoot})
-    # }
   end
 
   def route(%Conv{method: "GET", path: "/kaboom"} = _conv) do
