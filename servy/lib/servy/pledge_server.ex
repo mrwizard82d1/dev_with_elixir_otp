@@ -61,6 +61,11 @@ defmodule Servy.PledgeServer do
         # total = Enum.reduce(state, 0, fn x, acc -> elem(x, 1) + acc end)
         send(sender, {:response, total})
         listen_loop(state)
+
+      {sender, message} ->
+        # Unrecognized messages
+        IO.inspect(message, label: "Unhandled message: ")
+        listen_loop(state)
     end
   end
 
