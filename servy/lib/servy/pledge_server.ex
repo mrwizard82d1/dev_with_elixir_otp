@@ -1,4 +1,6 @@
 defmodule Servy.PledgeServer do
+  @name :pledge_server
+
   def start do
     IO.puts("Starting the pledge server...")
 
@@ -24,7 +26,7 @@ defmodule Servy.PledgeServer do
   end
 
   def create_pledge(name, amount) do
-    send(:pledge_server, {self(), :create_pledge, name, amount})
+    send(@name, {self(), :create_pledge, name, amount})
 
     receive do
       {:response, status} -> status
@@ -32,7 +34,7 @@ defmodule Servy.PledgeServer do
   end
 
   def recent_pledges() do
-    send(:pledge_server, {self(), :recent_pledges})
+    send(@name, {self(), :recent_pledges})
 
     receive do
       {:response, pledges} -> pledges
