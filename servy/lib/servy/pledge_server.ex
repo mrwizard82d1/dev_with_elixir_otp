@@ -1,6 +1,8 @@
 defmodule Servy.PledgeServer do
   @name :pledge_server
 
+  # Client Interface
+
   def start do
     IO.puts("Starting the pledge server...")
 
@@ -8,21 +10,6 @@ defmodule Servy.PledgeServer do
     Process.register(pid, :pledge_server)
     # Just in case the client wants it
     pid
-  end
-
-  def listen_loop(state) do
-    receive do
-      {sender, :create_pledge, name, amount} ->
-        {:ok, id} = send_pledge_to_service(name, amount)
-        most_recent_pledges = Enum.take(state, 2)
-        new_state = [{name, amount} | most_recent_pledges]
-        send(sender, {:response, id})
-        listen_loop(new_state)
-
-      {sender, :recent_pledges} ->
-        send(sender, {:response, state})
-        listen_loop(state)
-    end
   end
 
   def create_pledge(name, amount) do
@@ -38,6 +25,23 @@ defmodule Servy.PledgeServer do
 
     receive do
       {:response, pledges} -> pledges
+    end
+  end
+
+  # Server
+
+  def listen_loop(state) do
+    receive do
+      {sender, :create_pledge, name, amount} ->
+        {:ok, id} = send_pledge_to_service(name, amount)
+        most_recent_pledges = Enum.take(state, 2)
+        new_state = [{name, amount} | most_recent_pledges]
+        send(sender, {:response, id})
+        listen_loop(new_state)
+
+      {sender, :recent_pledges} ->
+        send(sender, {:response, state})
+        listen_loop(state)
     end
   end
 
