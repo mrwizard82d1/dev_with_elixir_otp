@@ -62,9 +62,9 @@ defmodule Servy.PledgeServer do
         send(sender, {:response, total})
         listen_loop(state)
 
-      {sender, message} ->
+      unrecognized ->
         # Unrecognized messages
-        IO.inspect(message, label: "Unhandled message: ")
+        IO.inspect(unrecognized, label: "Unrecognized: ")
         listen_loop(state)
     end
   end
