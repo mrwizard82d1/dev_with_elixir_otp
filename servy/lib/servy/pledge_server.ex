@@ -72,7 +72,9 @@ end
 
 alias Servy.PledgeServer
 
-PledgeServer.start()
+pid = PledgeServer.start()
+
+send(pid, {:stop, "hammertime"})
 
 IO.inspect(PledgeServer.create_pledge("larry", 10))
 IO.inspect(PledgeServer.create_pledge("moe", 20))
@@ -83,3 +85,5 @@ IO.inspect(PledgeServer.create_pledge("grace", 50))
 IO.inspect(PledgeServer.recent_pledges(), label: "Recent pledges")
 
 IO.inspect(PledgeServer.total_pledged(), label: "Total pledged")
+
+IO.inspect(Process.info(pid, :messages))
