@@ -52,7 +52,13 @@ defmodule Servy.PledgeServer do
         listen_loop(state)
 
       {sender, :total_pledged} ->
-        total = Enum.reduce(state, 0, fn x, acc -> elem(x, 1) + acc end)
+        # An alternative to Enum.reduce/3
+        total =
+          state
+          |> Enum.map(&elem(&1, 1))
+          |> Enum.sum()
+
+        # total = Enum.reduce(state, 0, fn x, acc -> elem(x, 1) + acc end)
         send(sender, {:response, total})
         listen_loop(state)
     end
