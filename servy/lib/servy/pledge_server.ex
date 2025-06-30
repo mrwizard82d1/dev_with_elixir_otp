@@ -7,7 +7,7 @@ defmodule Servy.PledgeServer do
     IO.puts("Starting the pledge server...")
 
     pid = spawn(__MODULE__, :listen_loop, [[]])
-    Process.register(pid, :pledge_server)
+    Process.register(pid, @name)
     # Just in case the client wants it
     pid
   end
@@ -26,6 +26,10 @@ defmodule Servy.PledgeServer do
     receive do
       {:response, pledges} -> pledges
     end
+  end
+
+  def total_pledged() do
+    IO.puts("Called Servy.PledgeServer.total_pledged/0")
   end
 
   # Server
@@ -51,14 +55,16 @@ defmodule Servy.PledgeServer do
   end
 end
 
-# alias Servy.PledgeServer
+alias Servy.PledgeServer
 
-# PledgeServer.start()
+PledgeServer.start()
 
-# IO.inspect(PledgeServer.create_pledge("larry", 10))
-# IO.inspect(PledgeServer.create_pledge("moe", 20))
-# IO.inspect(PledgeServer.create_pledge("curly", 30))
-# IO.inspect(PledgeServer.create_pledge("daisy", 40))
-# IO.inspect(PledgeServer.create_pledge("grace", 50))
+IO.inspect(PledgeServer.create_pledge("larry", 10))
+IO.inspect(PledgeServer.create_pledge("moe", 20))
+IO.inspect(PledgeServer.create_pledge("curly", 30))
+IO.inspect(PledgeServer.create_pledge("daisy", 40))
+IO.inspect(PledgeServer.create_pledge("grace", 50))
 
-# IO.inspect(PledgeServer.recent_pledges(), label: "Recent pledges")
+IO.inspect(PledgeServer.recent_pledges(), label: "Recent pledges")
+
+IO.inspect(PledgeServer.total_pledged(), label: "Total pledged")
