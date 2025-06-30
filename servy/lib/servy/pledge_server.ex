@@ -29,7 +29,11 @@ defmodule Servy.PledgeServer do
   end
 
   def total_pledged() do
-    IO.puts("Called Servy.PledgeServer.total_pledged/0")
+    send(@name, {self(), :total_pledged})
+
+    receive do
+      {:response, total} -> total
+    end
   end
 
   # Server
@@ -45,6 +49,11 @@ defmodule Servy.PledgeServer do
 
       {sender, :recent_pledges} ->
         send(sender, {:response, state})
+        listen_loop(state)
+
+      {sender, :total_pledged} ->
+        total = Enum.reduce(state, 0, fn x, acc -> elem(x, 1) + acc end)
+        send(sender, {:response, total})
         listen_loop(state)
     end
   end
