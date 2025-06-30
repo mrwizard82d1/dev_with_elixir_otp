@@ -1,4 +1,8 @@
 defmodule Servy.PledgeServer do
+  def init do
+    spawn(__MODULE__, :listen_loop, [[]])
+  end
+
   def listen_loop(state) do
     IO.puts("\nWaiting for a message...")
 
@@ -17,12 +21,9 @@ defmodule Servy.PledgeServer do
     end
   end
 
-  # def create_pledge(name, amount) do
-  #   {:ok, _id} = send_pledge_to_service(name, amount)
-
-  #   # Cache the pledge
-  #   [{"larry", 10}]
-  # end
+  def create_pledge(pid, name, amount) do
+    send(pid, {:create_pledge, name, amount})
+  end
 
   # def recent_pledges do
   #   # Return the most recent pledges from the cache
@@ -33,4 +34,20 @@ defmodule Servy.PledgeServer do
     # CODE GOES HERE TO SEND PLEDGE TO EXTERNAL SERVICE
     {:ok, "pledge-#{:rand.uniform(1000)}"}
   end
+end
+
+alias Servy.PledgeServer
+
+pid = spawn(PledgeServer, :listen_loop, [[]])
+
+Servy.PledgeServer.create_pledge(pid, "larry", 10)
+Servy.PledgeServer.create_pledge(pid, "moe", 20)
+Servy.PledgeServer.create_pledge(pid, "curly", 30)
+Servy.PledgeServer.create_pledge(pid, "daisy", 40)
+Servy.PledgeServer.create_pledge(pid, "grace", 50)
+
+send(pid, {self(), :recent_pledges})
+
+receive do
+  {:response, pledges} -> IO.inspect(pledges)
 end
