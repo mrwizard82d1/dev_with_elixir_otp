@@ -9,7 +9,8 @@ defmodule Servy.PledgeServer do
     receive do
       {:create_pledge, name, amount} ->
         {:ok, id} = send_pledge_to_service(name, amount)
-        new_state = [{name, amount} | state]
+        most_recent_pledges = Enum.take(state, 2)
+        new_state = [{name, amount} | most_recent_pledges]
         IO.puts("#{name} pledged #{amount}!")
         IO.puts("New state is #{inspect(new_state)}")
         listen_loop(new_state)
@@ -25,10 +26,13 @@ defmodule Servy.PledgeServer do
     send(pid, {:create_pledge, name, amount})
   end
 
-  # def recent_pledges do
-  #   # Return the most recent pledges from the cache
-  #   [{"larry", 10}]
-  # end
+  def recent_pledges(pid) do
+    send(pid, {self(), :recent_pledges})
+
+    receive do
+      {:response, pledges} -> pledges
+    end
+  end
 
   defp send_pledge_to_service(_name, _amount) do
     # CODE GOES HERE TO SEND PLEDGE TO EXTERNAL SERVICE
@@ -40,14 +44,10 @@ alias Servy.PledgeServer
 
 pid = spawn(PledgeServer, :listen_loop, [[]])
 
-Servy.PledgeServer.create_pledge(pid, "larry", 10)
-Servy.PledgeServer.create_pledge(pid, "moe", 20)
-Servy.PledgeServer.create_pledge(pid, "curly", 30)
-Servy.PledgeServer.create_pledge(pid, "daisy", 40)
-Servy.PledgeServer.create_pledge(pid, "grace", 50)
+PledgeServer.create_pledge(pid, "larry", 10)
+PledgeServer.create_pledge(pid, "moe", 20)
+PledgeServer.create_pledge(pid, "curly", 30)
+PledgeServer.create_pledge(pid, "daisy", 40)
+PledgeServer.create_pledge(pid, "grace", 50)
 
-send(pid, {self(), :recent_pledges})
-
-receive do
-  {:response, pledges} -> IO.inspect(pledges)
-end
+IO.inspect(PledgeServer.recent_pledges(pid), label: "Recent pledges")
