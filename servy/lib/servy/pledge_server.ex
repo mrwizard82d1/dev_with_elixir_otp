@@ -51,8 +51,8 @@ defmodule Servy.PledgeServer do
         send(sender, {:response, response})
         listen_loop(new_state)
 
-      :clear ->
-        new_state = []
+      message ->
+        new_state = handle_cast(message, state)
         listen_loop(new_state)
 
       unrecognized ->
@@ -60,6 +60,10 @@ defmodule Servy.PledgeServer do
         IO.inspect(unrecognized, label: "Unrecognized: ")
         listen_loop(state)
     end
+  end
+
+  def handle_cast(:clear, _state) do
+    []
   end
 
   def handle_call({:create_pledge, name, amount}, state) do
