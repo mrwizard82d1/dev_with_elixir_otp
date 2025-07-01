@@ -31,7 +31,7 @@ defmodule Servy.PledgeServer do
   # Helper functions
 
   def call(pid, message) do
-    send(pid, {self(), message})
+    send(pid, {:call, self(), message})
 
     receive do
       {:response, response} -> response
@@ -39,19 +39,19 @@ defmodule Servy.PledgeServer do
   end
 
   def cast(pid, message) do
-    send(pid, message)
+    send(pid, {:cast, message})
   end
 
   # Server
 
   def listen_loop(state) do
     receive do
-      {sender, message} when is_pid(sender) ->
+      {:call, sender, message} when is_pid(sender) ->
         {response, new_state} = handle_call(message, state)
         send(sender, {:response, response})
         listen_loop(new_state)
 
-      message ->
+      {:cast, message}->
         new_state = handle_cast(message, state)
         listen_loop(new_state)
 
