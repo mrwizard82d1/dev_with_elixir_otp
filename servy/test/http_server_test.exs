@@ -14,8 +14,6 @@ defmodule HttpServerTest do
   test "accepts a request on a socket and sends back the respons" do
     spawn(HttpServer, :start, [test_port()])
 
-    max_concurrent_requests = 5
-
     urls = [
       "http://localhost:4000/wildthings",
       "http://localhost:4000/bigfoot",
