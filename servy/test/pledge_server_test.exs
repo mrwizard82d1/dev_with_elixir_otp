@@ -7,6 +7,10 @@ defmodule PledgeServerTest do
     assert 2 + 2 == 4
   end
 
+  # I really should eliminate the duplication of setup in the next
+  # two unit tests; however, this action detracts from my main goal
+  # of learning Elixir more thoroughly.
+
   test "caches last three only" do
     # Start the server
     PledgeServer.start()
