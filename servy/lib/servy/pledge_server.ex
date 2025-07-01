@@ -1,4 +1,11 @@
 defmodule Servy.GenericServer do
+  def start(initial_state, name) do
+    pid = spawn(__MODULE__, :listen_loop, [initial_state])
+    Process.register(pid, name)
+    # Just in case the client wants it
+    pid
+  end
+
   def call(pid, message) do
     send(pid, {:call, self(), message})
 
@@ -10,6 +17,24 @@ defmodule Servy.GenericServer do
   def cast(pid, message) do
     send(pid, {:cast, message})
   end
+
+  def listen_loop(state) do
+    receive do
+      {:call, sender, message} when is_pid(sender) ->
+        {response, new_state} = Servy.PledgeServer.handle_call(message, state)
+        send(sender, {:response, response})
+        listen_loop(new_state)
+
+      {:cast, message}->
+        new_state = Servy.PledgeServer.handle_cast(message, state)
+        listen_loop(new_state)
+
+      unrecognized ->
+        # Unrecognized messages
+        IO.inspect(unrecognized, label: "Unrecognized: ")
+        listen_loop(state)
+    end
+  end
 end
 
 defmodule Servy.PledgeServer do
@@ -20,12 +45,7 @@ defmodule Servy.PledgeServer do
   # Client Interface
 
   def start do
-    IO.puts("Starting the pledge server...")
-
-    pid = spawn(__MODULE__, :listen_loop, [[]])
-    Process.register(pid, @name)
-    # Just in case the client wants it
-    pid
+    GenericServer.start([], @name)
   end
 
   def create_pledge(name, amount) do
@@ -45,24 +65,6 @@ defmodule Servy.PledgeServer do
   end
 
   # Server
-
-  def listen_loop(state) do
-    receive do
-      {:call, sender, message} when is_pid(sender) ->
-        {response, new_state} = handle_call(message, state)
-        send(sender, {:response, response})
-        listen_loop(new_state)
-
-      {:cast, message}->
-        new_state = handle_cast(message, state)
-        listen_loop(new_state)
-
-      unrecognized ->
-        # Unrecognized messages
-        IO.inspect(unrecognized, label: "Unrecognized: ")
-        listen_loop(state)
-    end
-  end
 
   def handle_cast(:clear, _state) do
     []
