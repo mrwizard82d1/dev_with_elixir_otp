@@ -24,12 +24,22 @@ defmodule Servy.PledgeServer do
     call(@name, :total_pledged)
   end
 
+  def clear() do
+    cast(@name, :clear)
+  end
+
+  # Helper functions
+
   def call(pid, message) do
     send(pid, {self(), message})
 
     receive do
       {:response, response} -> response
     end
+  end
+
+  def cast(pid, message) do
+    send(pid, message)
   end
 
   # Server
@@ -39,6 +49,10 @@ defmodule Servy.PledgeServer do
       {sender, message} when is_pid(sender) ->
         {response, new_state} = handle_call(message, state)
         send(sender, {:response, response})
+        listen_loop(new_state)
+
+      :clear ->
+        new_state = []
         listen_loop(new_state)
 
       unrecognized ->
@@ -83,6 +97,9 @@ IO.inspect(PledgeServer.create_pledge("larry", 10))
 IO.inspect(PledgeServer.create_pledge("moe", 20))
 IO.inspect(PledgeServer.create_pledge("curly", 30))
 IO.inspect(PledgeServer.create_pledge("daisy", 40))
+
+PledgeServer.clear
+
 IO.inspect(PledgeServer.create_pledge("grace", 50))
 
 IO.inspect(PledgeServer.recent_pledges(), label: "Recent pledges")
