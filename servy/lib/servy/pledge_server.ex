@@ -1,6 +1,6 @@
 defmodule Servy.GenericServer do
-  def start(initial_state, name) do
-    pid = spawn(__MODULE__, :listen_loop, [initial_state])
+  def start(callback_module, initial_state, name) do
+    pid = spawn(__MODULE__, :listen_loop, [initial_state, callback_module])
     Process.register(pid, name)
     # Just in case the client wants it
     pid
@@ -18,21 +18,21 @@ defmodule Servy.GenericServer do
     send(pid, {:cast, message})
   end
 
-  def listen_loop(state) do
+  def listen_loop(state, callback_module) do
     receive do
       {:call, sender, message} when is_pid(sender) ->
-        {response, new_state} = Servy.PledgeServer.handle_call(message, state)
+        {response, new_state} = callback_module.handle_call(message, state)
         send(sender, {:response, response})
-        listen_loop(new_state)
+        listen_loop(new_state, callback_module)
 
       {:cast, message}->
-        new_state = Servy.PledgeServer.handle_cast(message, state)
-        listen_loop(new_state)
+        new_state = callback_module.handle_cast(message, state)
+        listen_loop(new_state, callback_module)
 
       unrecognized ->
         # Unrecognized messages
         IO.inspect(unrecognized, label: "Unrecognized: ")
-        listen_loop(state)
+        listen_loop(state, callback_module)
     end
   end
 end
@@ -45,7 +45,7 @@ defmodule Servy.PledgeServer do
   # Client Interface
 
   def start do
-    GenericServer.start([], @name)
+    GenericServer.start(__MODULE__, [], @name)
   end
 
   def create_pledge(name, amount) do
@@ -64,7 +64,7 @@ defmodule Servy.PledgeServer do
     GenericServer.cast(@name, :clear)
   end
 
-  # Server
+  # Server Callbacks
 
   def handle_cast(:clear, _state) do
     []
