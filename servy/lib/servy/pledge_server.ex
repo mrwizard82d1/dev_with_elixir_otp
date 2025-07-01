@@ -13,26 +13,22 @@ defmodule Servy.PledgeServer do
   end
 
   def create_pledge(name, amount) do
-    send(@name, {self(), :create_pledge, name, amount})
-
-    receive do
-      {:response, status} -> status
-    end
+    call(@name, {:create_pledge, name, amount})
   end
 
   def recent_pledges() do
-    send(@name, {self(), :recent_pledges})
-
-    receive do
-      {:response, pledges} -> pledges
-    end
+    call(@name, :recent_pledges)
   end
 
   def total_pledged() do
-    send(@name, {self(), :total_pledged})
+    call(@name, :total_pledged)
+  end
+
+  def call(pid, message) do
+    send(pid, {self(), message})
 
     receive do
-      {:response, total} -> total
+      {:response, response} -> response
     end
   end
 
@@ -40,7 +36,7 @@ defmodule Servy.PledgeServer do
 
   def listen_loop(state) do
     receive do
-      {sender, :create_pledge, name, amount} ->
+      {sender, {:create_pledge, name, amount}} ->
         {:ok, id} = send_pledge_to_service(name, amount)
         most_recent_pledges = Enum.take(state, 2)
         new_state = [{name, amount} | most_recent_pledges]
