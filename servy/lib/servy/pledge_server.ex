@@ -1,5 +1,21 @@
+defmodule Servy.GenericServer do
+  def call(pid, message) do
+    send(pid, {:call, self(), message})
+
+    receive do
+      {:response, response} -> response
+    end
+  end
+
+  def cast(pid, message) do
+    send(pid, {:cast, message})
+  end
+end
+
 defmodule Servy.PledgeServer do
   @name :pledge_server
+
+  alias Servy.GenericServer
 
   # Client Interface
 
@@ -13,33 +29,19 @@ defmodule Servy.PledgeServer do
   end
 
   def create_pledge(name, amount) do
-    call(@name, {:create_pledge, name, amount})
+    GenericServer.call(@name, {:create_pledge, name, amount})
   end
 
   def recent_pledges() do
-    call(@name, :recent_pledges)
+    GenericServer.call(@name, :recent_pledges)
   end
 
   def total_pledged() do
-    call(@name, :total_pledged)
+    GenericServer.call(@name, :total_pledged)
   end
 
   def clear() do
-    cast(@name, :clear)
-  end
-
-  # Helper functions
-
-  def call(pid, message) do
-    send(pid, {:call, self(), message})
-
-    receive do
-      {:response, response} -> response
-    end
-  end
-
-  def cast(pid, message) do
-    send(pid, {:cast, message})
+    GenericServer.cast(@name, :clear)
   end
 
   # Server
