@@ -36,7 +36,7 @@ defmodule Servy.PledgeServer do
 
   def listen_loop(state) do
     receive do
-      {sender, message} ->
+      {sender, message} when is_pid(sender) ->
         {response, new_state} = handle_call(message, state)
         send(sender, {:response, response})
         listen_loop(new_state)
@@ -77,7 +77,7 @@ alias Servy.PledgeServer
 
 pid = PledgeServer.start()
 
-# send(pid, {:stop, "hammertime"})
+send(pid, {:stop, "hammertime"})
 
 IO.inspect(PledgeServer.create_pledge("larry", 10))
 IO.inspect(PledgeServer.create_pledge("moe", 20))
