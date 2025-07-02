@@ -1,92 +1,85 @@
-defmodule Servy.GenericServer do
-  def start(callback_module, initial_state, name) do
-    pid = spawn(__MODULE__, :listen_loop, [initial_state, callback_module])
-    Process.register(pid, name)
-    # Just in case the client wants it
-    pid
-  end
-
-  def call(pid, message) do
-    send(pid, {:call, self(), message})
-
-    receive do
-      {:response, response} -> response
-    end
-  end
-
-  def cast(pid, message) do
-    send(pid, {:cast, message})
-  end
-
-  def listen_loop(state, callback_module) do
-    receive do
-      {:call, sender, message} when is_pid(sender) ->
-        {response, new_state} = callback_module.handle_call(message, state)
-        send(sender, {:response, response})
-        listen_loop(new_state, callback_module)
-
-      {:cast, message}->
-        new_state = callback_module.handle_cast(message, state)
-        listen_loop(new_state, callback_module)
-
-      unrecognized ->
-        # Unrecognized messages
-        IO.inspect(unrecognized, label: "Unrecognized: ")
-        listen_loop(state, callback_module)
-    end
-  end
-end
-
+# NOTE: When we run this code in `iex`, the Elixir runtime presents a
+# warning that we **did not** define the function `init/1` which the
+# warning reports is **required** by the behaviour GenServer. However,
+# the runtime helpfully, injects a default implementation for us.
+#
+# ```
+# def init(init_arg) do
+#   {:ok, init_arg}
+# end
+# ```
 defmodule Servy.PledgeServer do
   @name :pledge_server
 
-  alias Servy.GenericServer
+  # The `use` macro injects default implementations of required callbacks
+  # into the current module. Our implementations of `handle_call` and
+  # `handle_cast` will override these two injected callbacks.
+  use GenServer
 
   # Client Interface
 
   def start do
-    GenericServer.start(__MODULE__, [], @name)
+    # `GenServer` specifies name of server in trailing keyword list
+    GenServer.start(__MODULE__, [], name: @name)
   end
 
   def create_pledge(name, amount) do
-    GenericServer.call(@name, {:create_pledge, name, amount})
+    GenServer.call(@name, {:create_pledge, name, amount})
   end
 
   def recent_pledges() do
-    GenericServer.call(@name, :recent_pledges)
+    GenServer.call(@name, :recent_pledges)
   end
 
   def total_pledged() do
-    GenericServer.call(@name, :total_pledged)
+    GenServer.call(@name, :total_pledged)
   end
 
   def clear() do
-    GenericServer.cast(@name, :clear)
+    GenServer.cast(@name, :clear)
   end
 
   # Server Callbacks
 
+  # The requirements of `GenServer.handle_cast` are slightly different than
+  # our original requirements. We must return a tuple of two items. The
+  # first item is the atom `:noreply`. The second item is our new state.
+  #
+  # Note that atoms other than `:noreply` are possible; however, `:noreply`
+  # is by far the most used.
   def handle_cast(:clear, _state) do
-    []
+    {:noreply, []}
   end
 
-  def handle_call({:create_pledge, name, amount}, state) do
+  # `GenServer.handle_call` requires that we return a tuple which we
+  # already return; however, it requires that the tuple contain a tag,
+  # `:reply` as the first item.
+  #
+  # This keyword instructs the `GenServer` to reply back to the client.
+  # The reply to the client will contain the remaining items in the tuple.
+  #
+  # In addition, `GenServer.handle_call` takes **three** arguments not
+  # **two** as we supply. We will name the additional value `from`. This
+  # second argument is to contain additional information about the
+  # **sender**. However, this information about the sender is typically
+  # **not needed**. Consequently, we will ignore it in this code.
+  def handle_call({:create_pledge, name, amount}, _from, state) do
     {:ok, id} = send_pledge_to_service(name, amount)
     most_recent_pledges = Enum.take(state, 2)
     new_state = [{name, amount} | most_recent_pledges]
-    {id, new_state}
+    {:reply, id, new_state}
   end
 
-  def handle_call(:recent_pledges, state) do
-    {state, state}
+  def handle_call(:recent_pledges, _from, state) do
+    {:reply, state, state}
   end
 
-  def handle_call(:total_pledged, state) do
+  def handle_call(:total_pledged, _from, state) do
     total =
       state
       |> Enum.map(&elem(&1, 1))
       |> Enum.sum()
-    {total, state}
+    {:reply, total, state}
   end
 
   defp send_pledge_to_service(_name, _amount) do
@@ -97,16 +90,19 @@ end
 
 alias Servy.PledgeServer
 
-pid = PledgeServer.start()
+# The last change required by `GenServer` is when we start the server.
+# `GenServer.start/0` returns a value that is a tuple; typically, a tuple
+# like `{:ok, pid}`.
+{:ok, pid} = PledgeServer.start()
 
-send(pid, {:stop, "hammertime"})
+# send(pid, {:stop, "hammertime"})
 
 IO.inspect(PledgeServer.create_pledge("larry", 10))
 IO.inspect(PledgeServer.create_pledge("moe", 20))
 IO.inspect(PledgeServer.create_pledge("curly", 30))
 IO.inspect(PledgeServer.create_pledge("daisy", 40))
 
-PledgeServer.clear
+# PledgeServer.clear
 
 IO.inspect(PledgeServer.create_pledge("grace", 50))
 
