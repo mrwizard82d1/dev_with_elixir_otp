@@ -62,6 +62,16 @@ defmodule Servy.PledgeServer do
 
   # Server Callbacks
 
+  # Implement the `GenServer.init/1` callback
+  #
+  # Remember that `start/0` **blocks** until this call returns. Therefore,
+  # be brief!
+  def init(start_state) do
+    start_pledges = fetch_recent_pledges_from_service()
+    new_state = %{start_state | pledges: start_pledges}
+    {:ok, new_state}
+  end
+
   # The requirements of `GenServer.handle_cast` are slightly different than
   # our original requirements. We must return a tuple of two items. The
   # first item is the atom `:noreply`. The second item is our new state.
@@ -115,6 +125,13 @@ defmodule Servy.PledgeServer do
     # CODE GOES HERE TO SEND PLEDGE TO EXTERNAL SERVICE
     {:ok, "pledge-#{:rand.uniform(1000)}"}
   end
+
+  defp fetch_recent_pledges_from_service() do
+    # CODE GOES HERE TO FETCH RECENT PLEDGES FROM EXTERNAL SERVICE
+
+    # Example return value
+    [{"wilma", 15}, {"fred", 25}]
+  end
 end
 
 alias Servy.PledgeServer
@@ -130,11 +147,11 @@ PledgeServer.set_cache_size(4)
 
 IO.inspect(PledgeServer.create_pledge("larry", 10))
 
-PledgeServer.clear
-
-IO.inspect(PledgeServer.create_pledge("moe", 20))
-IO.inspect(PledgeServer.create_pledge("curly", 30))
-IO.inspect(PledgeServer.create_pledge("daisy", 40))
+#PledgeServer.clear
+#
+#IO.inspect(PledgeServer.create_pledge("moe", 20))
+#IO.inspect(PledgeServer.create_pledge("curly", 30))
+#IO.inspect(PledgeServer.create_pledge("daisy", 40))
 
 IO.inspect(PledgeServer.create_pledge("grace", 50))
 
