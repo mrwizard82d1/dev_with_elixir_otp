@@ -16,11 +16,28 @@ defmodule Servy.PledgeServer do
   # `handle_cast` will override these two injected callbacks.
   use GenServer
 
+  # We plan to implement a new feature: setting the cache size. Currently,
+  # The cache size is hard-coded to 3. We wish to change that to support
+  # users changing the cache size during the running program.
+  #
+  # To implement this change, our state must change. Previously our state
+  # wis simply a list of pledges. Now our state will need to include both
+  # the list of pledges **and** the current cache size.
+  #
+  # We could define a new structure as a `Map` with two keys:
+  # - `cache_size`
+  # - `pledges`
+  # However, this choice can easily become unwieldy. Instead, we will define
+  # a `struct` to capture our state.
+  defmodule State do
+    defstruct cache_size: 3, pledges: []
+  end
+
   # Client Interface
 
   def start do
     # `GenServer` specifies name of server in trailing keyword list
-    GenServer.start(__MODULE__, [], name: @name)
+    GenServer.start(__MODULE__, %State{}, name: @name)
   end
 
   def create_pledge(name, amount) do
@@ -47,8 +64,8 @@ defmodule Servy.PledgeServer do
   #
   # Note that atoms other than `:noreply` are possible; however, `:noreply`
   # is by far the most used.
-  def handle_cast(:clear, _state) do
-    {:noreply, []}
+  def handle_cast(:clear, state) do
+    {:noreply, %{state | pledges: []}}
   end
 
   # `GenServer.handle_call` requires that we return a tuple which we
@@ -65,18 +82,21 @@ defmodule Servy.PledgeServer do
   # **not needed**. Consequently, we will ignore it in this code.
   def handle_call({:create_pledge, name, amount}, _from, state) do
     {:ok, id} = send_pledge_to_service(name, amount)
-    most_recent_pledges = Enum.take(state, 2)
-    new_state = [{name, amount} | most_recent_pledges]
+    most_recent_pledges = Enum.take(state.pledges, state.cache_size - 1)
+    cached_pledges = [{name, amount} | most_recent_pledges]
+    new_state = %{state | pledges: cached_pledges}
     {:reply, id, new_state}
   end
 
   def handle_call(:recent_pledges, _from, state) do
-    {:reply, state, state}
+    # We recurse with the existing state, the 3rd argument, but return
+    # `state.pledges` back to the client.
+    {:reply, state.pledges, state}
   end
 
   def handle_call(:total_pledged, _from, state) do
     total =
-      state
+      state.pledges
       |> Enum.map(&elem(&1, 1))
       |> Enum.sum()
     {:reply, total, state}
