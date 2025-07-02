@@ -56,6 +56,10 @@ defmodule Servy.PledgeServer do
     GenServer.cast(@name, :clear)
   end
 
+  def set_cache_size(size) do
+    GenServer.cast(@name, {:set_cache_size, size})
+  end
+
   # Server Callbacks
 
   # The requirements of `GenServer.handle_cast` are slightly different than
@@ -66,6 +70,11 @@ defmodule Servy.PledgeServer do
   # is by far the most used.
   def handle_cast(:clear, state) do
     {:noreply, %{state | pledges: []}}
+  end
+
+  def handle_cast({:set_cache_size, size}, state) do
+    new_state = %{state | cache_size: size}
+    {:noreply, new_state }
   end
 
   # `GenServer.handle_call` requires that we return a tuple which we
@@ -116,6 +125,8 @@ alias Servy.PledgeServer
 {:ok, pid} = PledgeServer.start()
 
 # send(pid, {:stop, "hammertime"})
+
+PledgeServer.set_cache_size(4)
 
 IO.inspect(PledgeServer.create_pledge("larry", 10))
 
