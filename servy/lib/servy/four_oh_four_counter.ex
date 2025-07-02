@@ -1,52 +1,39 @@
 defmodule Servy.FourOhFourCounter do
   @name :four_oh_four_counter
 
+  alias Servy.GenericServer
+
   # Client interface
 
   def start do
-    IO.puts("Starting the 404 counter...")
-
-    pid = spawn(__MODULE__, :loop, [%{}])
-    Process.register(pid, @name)
-    pid
+    GenericServer.start(__MODULE__, %{}, @name)
   end
 
   def bump_count(url_text) do
-    send(@name, {self(), :bump_count, url_text})
-
-    receive do {:response, count} -> count end
+    GenericServer.call(@name, {:bump_count, url_text})
    end
 
   def get_count(url_text) do
-    send(@name, {self(), :get_count, url_text})
-
-    receive do {:response, count} -> count end
+    GenericServer.call(@name, {:get_count, url_text})
   end
 
   def get_counts do
-    send(@name, {self(), :get_counts})
-
-    receive do {:response, counts} -> counts end
+    GenericServer.call(@name, :get_counts)
   end
 
-  # Server interface
+  # Server Callbacks
 
-  def loop(state) do
-    receive do
-      {sender, :bump_count, url_text} ->
-        new_state = Map.update(state, url_text, 1, &(&1 + 1))
-        send sender, {:response, Map.get(new_state, url_text)}
-        loop(new_state)
-      {sender, :get_count, url_text} ->
-        count = Map.get(state, url_text, 0)
-        send(sender, {:response, count})
-        loop(state)
-      {sender, :get_counts} ->
-        send(sender, {:response, state})
-        loop(state)
-      unexpected ->
-        IO.puts("Unexpected message: #{inspect(unexpected)}")
-        loop(state)
-    end
+  def handle_call({:bump_count, url_text}, state) do
+    new_state = Map.update(state, url_text, 1, &(&1 + 1))
+    {new_state, new_state}
+  end
+
+  def handle_call({:get_count, url_text}, state) do
+    count = Map.get(state, url_text, 0)
+    {count, state}
+  end
+
+  def handle_call(:get_counts, state) do
+    {state, state}
   end
 end
