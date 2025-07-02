@@ -21,6 +21,10 @@ defmodule Servy.FourOhFourCounter do
     GenericServer.call(@name, :get_counts)
   end
 
+  def reset do
+    GenericServer.cast(@name, :reset)
+  end
+
   # Server Callbacks
 
   def handle_call({:bump_count, url_text}, state) do
@@ -35,5 +39,9 @@ defmodule Servy.FourOhFourCounter do
 
   def handle_call(:get_counts, state) do
     {state, state}
+  end
+
+  def handle_cast(:reset, _state) do
+    %{}
   end
 end
