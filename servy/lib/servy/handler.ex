@@ -3,7 +3,7 @@ defmodule Servy.Handler do
 
   alias Servy.BearController
   alias Servy.Conv
-  alias Servy.View
+  # alias Servy.View
 
   @pages_path Path.expand("../../pages", __DIR__)
 
