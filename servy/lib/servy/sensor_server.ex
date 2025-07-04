@@ -1,5 +1,7 @@
 defmodule Servy.SensorServer do
   @name :sensor_server
+  # Five seconds for testing; 60 minutes in production
+  @refresh_interval :timer.seconds(5)
 
   use GenServer
 
@@ -17,7 +19,7 @@ defmodule Servy.SensorServer do
 
   def init(_state) do
     initial_state = run_tasks_to_get_sensor_data()
-    Process.send_after(self(), :refresh, :timer.seconds(5))
+    schedule_refresh()
     {:ok, initial_state}
   end
 
@@ -25,8 +27,12 @@ defmodule Servy.SensorServer do
     IO.puts("Refreshing the cache...")
 
     new_state = run_tasks_to_get_sensor_data()
-    Process.send_after(self(), :refresh, :timer.seconds(5))
+    schedule_refresh()
     {:noreply, new_state}
+  end
+
+  defp schedule_refresh() do
+    Process.send_after(self(), :refresh, @refresh_interval)
   end
 
   def handle_call(:get_sensor_data, _from, state) do
