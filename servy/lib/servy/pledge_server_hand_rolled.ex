@@ -25,13 +25,12 @@ defmodule Servy.GenericServer do
         send(sender, {:response, response})
         listen_loop(new_state, callback_module)
 
-      {:cast, message}->
+      {:cast, message} ->
         new_state = callback_module.handle_cast(message, state)
         listen_loop(new_state, callback_module)
 
-      unrecognized ->
-        # Unrecognized messages
-        IO.inspect(unrecognized, label: "Unrecognized: ")
+      other ->
+        callback_module.handle_info(other, state)
         listen_loop(state, callback_module)
     end
   end
@@ -86,7 +85,15 @@ defmodule Servy.PledgeServerHandRolled do
       state
       |> Enum.map(&elem(&1, 1))
       |> Enum.sum()
+
     {total, state}
+  end
+
+  def handle_info(other, state) do
+    # Unrecognized messages
+    IO.puts("Unexpected message: #{inspect(other)}")
+
+    state
   end
 
   defp send_pledge_to_service(_name, _amount) do
@@ -95,23 +102,23 @@ defmodule Servy.PledgeServerHandRolled do
   end
 end
 
-#alias Servy.PledgeServerHandRolled
+alias Servy.PledgeServerHandRolled
+
+pid = PledgeServerHandRolled.start()
+
+send(pid, {:stop, "hammertime"})
+
+# IO.inspect(PledgeServerHandRolled.create_pledge("larry", 10))
+# IO.inspect(PledgeServerHandRolled.create_pledge("moe", 20))
+# IO.inspect(PledgeServerHandRolled.create_pledge("curly", 30))
+# IO.inspect(PledgeServerHandRolled.create_pledge("daisy", 40))
 #
-#pid = PledgeServerHandRolled.start()
+# PledgeServerHandRolled.clear
 #
-#send(pid, {:stop, "hammertime"})
+# IO.inspect(PledgeServerHandRolled.create_pledge("grace", 50))
 #
-#IO.inspect(PledgeServerHandRolled.create_pledge("larry", 10))
-#IO.inspect(PledgeServerHandRolled.create_pledge("moe", 20))
-#IO.inspect(PledgeServerHandRolled.create_pledge("curly", 30))
-#IO.inspect(PledgeServerHandRolled.create_pledge("daisy", 40))
+# IO.inspect(PledgeServerHandRolled.recent_pledges(), label: "Recent pledges")
 #
-#PledgeServerHandRolled.clear
+# IO.inspect(PledgeServerHandRolled.total_pledged(), label: "Total pledged")
 #
-#IO.inspect(PledgeServerHandRolled.create_pledge("grace", 50))
-#
-#IO.inspect(PledgeServerHandRolled.recent_pledges(), label: "Recent pledges")
-#
-#IO.inspect(PledgeServerHandRolled.total_pledged(), label: "Total pledged")
-#
-#IO.inspect(Process.info(pid, :messages))
+# IO.inspect(Process.info(pid, :messages))
