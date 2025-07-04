@@ -1,13 +1,3 @@
-# NOTE: When we run this code in `iex`, the Elixir runtime presents a
-# warning that we **did not** define the function `init/1` which the
-# warning reports is **required** by the behaviour GenServer. However,
-# the runtime helpfully, injects a default implementation for us.
-#
-# ```
-# def init(init_arg) do
-#   {:ok, init_arg}
-# end
-# ```
 defmodule Servy.PledgeServer do
   @name :pledge_server
 
