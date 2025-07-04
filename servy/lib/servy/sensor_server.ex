@@ -36,6 +36,6 @@ defmodule Servy.SensorServer do
 
     where_is_bigfoot = Task.await(task)
 
-    %{snampshots: snapshots, loccation: where_is_bigfoot}
+    %{snapshots: snapshots, loccation: where_is_bigfoot}
   end
 end
