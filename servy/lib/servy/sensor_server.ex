@@ -31,6 +31,12 @@ defmodule Servy.SensorServer do
     {:noreply, new_state}
   end
 
+  def handle_info(unexpected, state) do
+    IO.puts("Can't touch this! #{inspect unexpected}")
+
+    {:noreply, state}
+  end
+
   defp schedule_refresh() do
     Process.send_after(self(), :refresh, @refresh_interval)
   end
