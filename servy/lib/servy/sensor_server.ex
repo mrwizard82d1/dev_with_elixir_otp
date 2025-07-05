@@ -5,10 +5,17 @@ defmodule Servy.SensorServer do
 
   use GenServer
 
+  # Convert @refresh_interval to State
+  #
+  # Five seconds for testing; 60 minutes in production
+  defmodule State do
+    defstruct snapshots: [], location: %{}, refresh_interval: :timer.seconds(5)
+  end
+
   # Client Interface
 
   def start do
-    GenServer.start(__MODULE__, %{}, name: @name)
+    GenServer.start(__MODULE__, %State{}, name: @name)
   end
 
   def get_sensor_data() do
@@ -21,10 +28,15 @@ defmodule Servy.SensorServer do
 
   # Server Callbacks
 
-  def init(_state) do
-    initial_state = run_tasks_to_get_sensor_data()
+  def init(state) do
+    sensor_data = run_tasks_to_get_sensor_data()
+    new_state = %State{
+      state |
+      snapshots: sensor_data.snapshots,
+      location: sensor_data.location,
+    }
     schedule_refresh()
-    {:ok, initial_state}
+    {:ok, new_state}
   end
 
   def handle_info(:refresh, _state) do
@@ -61,6 +73,6 @@ defmodule Servy.SensorServer do
 
     where_is_bigfoot = Task.await(task)
 
-    %{snapshots: snapshots, loccation: where_is_bigfoot}
+    %{snapshots: snapshots, location: where_is_bigfoot}
   end
 end
