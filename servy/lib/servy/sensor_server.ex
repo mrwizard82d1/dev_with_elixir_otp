@@ -15,6 +15,10 @@ defmodule Servy.SensorServer do
     GenServer.call(@name, :get_sensor_data)
   end
 
+  def set_refresh_interval(new_timer) do
+    IO.puts("Set refresh timer to #{new_timer} ms")
+  end
+
   # Server Callbacks
 
   def init(_state) do
