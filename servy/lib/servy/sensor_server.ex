@@ -22,8 +22,8 @@ defmodule Servy.SensorServer do
     GenServer.call(@name, :get_sensor_data)
   end
 
-  def set_refresh_interval(new_timer) do
-    IO.puts("Set refresh timer to #{new_timer} ms")
+  def set_refresh_interval(new_interval) do
+    GenServer.cast(@name, {:set_refresh_interval, new_interval})
   end
 
   # Server Callbacks
@@ -74,5 +74,10 @@ defmodule Servy.SensorServer do
     where_is_bigfoot = Task.await(task)
 
     %{snapshots: snapshots, location: where_is_bigfoot}
+  end
+
+  def handle_cast({:set_refresh_interval, new_interval}, state) do
+    IO.puts("Called handle_cast with :set_refresh_interval #{new_interval}")
+    {:noreply, state}
   end
 end
