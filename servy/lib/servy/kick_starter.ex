@@ -36,4 +36,17 @@ defmodule Servy.KickStarter do
     Process.register(server_pid, :http_server)
     {:ok, server_pid}
   end
+
+  def handle_info({:EXIT, _pid, reason}, _state) do
+    # In production code one probably wants to log information about this
+    # terminated process. We, however, wil simply print a message out to
+    # the console.
+    IO.puts("HttpServer exited (#{inspect reason})")
+
+    IO.puts("(Re-)Starting the HttpServer")
+    server_pid = spawn(Servy.HttpServer, :start, [4000])
+    Process.link(server_pid)
+    Process.register(server_pid, :http_server)
+    {:noreply, server_pid}
+  end
 end
