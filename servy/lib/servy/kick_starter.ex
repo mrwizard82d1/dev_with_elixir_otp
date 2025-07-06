@@ -3,10 +3,10 @@ defmodule Servy.KickStarter do
 
   # Client interface
 
-  def start do
+  def start_link(_unused) do
     IO.puts "Starting the kickstarter..."
 
-    GenServer.start(__MODULE__, :ok, name: __MODULE__)
+    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
   def get_server do
@@ -45,6 +45,7 @@ defmodule Servy.KickStarter do
   defp start_http_server() do
     IO.puts("Starting the HttpServer....")
     # Perform spawn and link in one atomic step
-    spawn_link(Servy.HttpServer, :start, [4000])
+    server_pid = spawn_link(Servy.HttpServer, :start, [4000])
+    Process.register(server_pid, :http_server)
   end
 end
