@@ -8,6 +8,13 @@ defmodule Servy.KickStarter do
   end
 
   def init(:ok) do
+    # By setting the `:trap_exit` flag to `true`, the `KickStarter`
+    # process will **not** crash when the `HttpServer` process dies.
+    # (I'm currently uncertain how to kill this process if I so choose -
+    # other than by restarting `iex` or the elikir OS process running
+    # the erlang VM.
+    Process.flag(:trap_exit, true)
+
     IO.puts "Starting the HTTP server...."
 
     server_pid = spawn(Servy.HttpServer, :start, [4000])
