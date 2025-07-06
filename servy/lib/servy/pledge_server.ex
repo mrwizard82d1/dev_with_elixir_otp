@@ -4,7 +4,7 @@ defmodule Servy.PledgeServer do
   # The `use` macro injects default implementations of required callbacks
   # into the current module. Our implementations of `handle_call` and
   # `handle_cast` will override these two injected callbacks.
-  use GenServer, restart: :temporary
+  use GenServer
 
   # We plan to implement a new feature: setting the cache size. Currently,
   # The cache size is hard-coded to 3. We wish to change that to support
@@ -21,6 +21,14 @@ defmodule Servy.PledgeServer do
   # a `struct` to capture our state.
   defmodule State do
     defstruct cache_size: 3, pledges: []
+  end
+
+  def child_spec(arg) do
+    %{
+      id: Servy.PledgeServer,
+      restart: :temporary,
+      start: {Servy.PledgeServer, :start_link, [[]]}
+    }
   end
 
   # Client Interface
