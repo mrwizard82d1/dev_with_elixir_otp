@@ -7,13 +7,15 @@ defmodule Servy.SensorServer do
   defmodule State do
     # Five seconds for testing; 60 minutes in production
     # defstruct sensor_data: %{},refresh_interval: :timer.seconds(5)
-    defstruct sensor_data: %{},refresh_interval: :timer.minutes(60)
+    defstruct sensor_data: %{}, refresh_interval: :timer.minutes(60)
   end
 
   # Client Interface
 
-  def start_link(_unused) do
-    IO.puts("Starting the sensor server...")
+  def start_link(interval) do
+    # Exercise for the reader: Actually use the `interval` argument to set
+    # The `:refresh_interval` value
+    IO.puts("Starting the sensor server with min refresh #{interval}...")
     GenServer.start_link(__MODULE__, %State{}, name: @name)
   end
 
