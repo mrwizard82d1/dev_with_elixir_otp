@@ -27,7 +27,10 @@ defmodule Servy.MixProject do
       # The second argument is a list of additional arguments needed
       # by our application. And our application needs **no**
       # additional arguments.
-      mod: {Servy, []}
+      mod: {Servy, []},
+      # We have been using port 4000 throughout our testing. We only
+      # use port 3000 at start to use a **different** port number.
+      env: [port: 3000]
     ]
   end
 

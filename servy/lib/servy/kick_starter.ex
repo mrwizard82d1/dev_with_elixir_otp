@@ -4,13 +4,13 @@ defmodule Servy.KickStarter do
   # Client interface
 
   def start_link(_unused) do
-    IO.puts "Starting the kickstarter..."
+    IO.puts("Starting the kickstarter...")
 
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
   def get_server do
-    GenServer.call __MODULE__, :get_server
+    GenServer.call(__MODULE__, :get_server)
   end
 
   # Server Callbacks
@@ -36,7 +36,7 @@ defmodule Servy.KickStarter do
     # In production code one probably wants to log information about this
     # terminated process. We, however, wil simply print a message out to
     # the console.
-    IO.puts("HttpServer exited (#{inspect reason})")
+    IO.puts("HttpServer exited (#{inspect(reason)})")
 
     server_pid = start_http_server()
     {:noreply, server_pid}
@@ -44,8 +44,10 @@ defmodule Servy.KickStarter do
 
   defp start_http_server() do
     IO.puts("Starting the HttpServer....")
+    # Get the configured port from the environment
+    port = Application.get_env(:servy, :port)
     # Perform spawn and link in one atomic step
-    server_pid = spawn_link(Servy.HttpServer, :start, [4000])
+    server_pid = spawn_link(Servy.HttpServer, :start, [port])
     Process.register(server_pid, :http_server)
   end
 end
